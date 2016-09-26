@@ -1,0 +1,10 @@
+include_directories(.)
+
+catkin_add_gtest(gtest_any gtest_any.cpp)
+target_link_libraries(gtest_any ${PROJECT_NAME} ${Boost_LIBRARIES})
+
+catkin_add_gtest(gtest_property gtest_property.cpp)
+target_link_libraries(gtest_property ${PROJECT_NAME} ${Boost_LIBRARIES})
+
+catkin_add_gtest(gtest_property_bag gtest_property_bag.cpp)
+target_link_libraries(gtest_property_bag ${PROJECT_NAME} ${Boost_LIBRARIES})
