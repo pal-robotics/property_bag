@@ -21,6 +21,7 @@ Usage :
         bag.addPropertiesWithDoc("my_other_bool", true, "Whether to use this cool feature or not.",
                                  "my_string", "camera left", "The sensor name");
         ```
+
     * With properties instantiation constructor :
 
         ```c++
@@ -29,6 +30,7 @@ Usage :
         ```
 
 * You can then retrieve properties from a `PropertyBag` :
+
     ```c++
     /*const*/ auto& prop_bool = bag.getProperty("my_bool");
     assert_true(prop_bool.get<bool>());
@@ -36,6 +38,7 @@ Usage :
     ```
 
 * Or you can retrieve directly the value held by the property :
+
     ```c++
     int a_int(41);
     bag.getPropertyValue<int>("my_int", a_int);
@@ -43,27 +46,34 @@ Usage :
     ```
     
 * And of course you can delete properties :
+
     ```c++
     bag.removeProperty("my_string"); // returns true/false.
     ```
 
-* Notice that properties can not be overwriten ! 
+* Notice that properties can not be overwriten !
+
     ```c++
     bag.addProperty("circle_radius", 2.5f, "Circle radius"); // return true
     bag.addProperty("circle_radius", 2.5f, "Circle radius"); // return false, the `Property` already exists
     ```
+
     In order to update a `Property` value you can either :
     * retrieve the `Property` and update its value :
+
         ```c++
         auto& prop_bool = bag.getProperty("my_bool");
         prop_bool.set(false);
         ```
+
     * or use the update value function :
+
         ```c++
         bag.updateProperty("my_bool", false);
         ```
-        
+
 * Finally `PropertyBag` can be serialized using `boost serialization` :
+
     ```c++
     std::stringstream ss;
     {
@@ -82,27 +92,37 @@ Usage :
       ...
     }
     ```
+
     Beware that to serialize a custom class, the custom class must define the `serialize(...)` function.
     Moreover you need to export it for the boost archive to be abble to deserialize it proprely. To do so you can use the following macro:
+
     ```c++
     EXPORT_PROPERTY_NAMED_TYPE(test_namespace::DummyMaker, test_namespace__DummyMaker);
     ```
+
     See [Boost Serialization Doc](http://www.boost.org/doc/libs/1_61_0/libs/serialization/doc/) for more info.
 
 * Some other cool features include :
     * Check if the bag holds anything :
+
         ```c++
         bag.empty(); // returns true/false
         ```
+
     * Get how many properties the bag contains :
+
         ```c++
         bag.size(); // returns size_t, the number of properties held.
         ```
+
     * `Property` existence checking :
+
         ```c++
         bag.exists("my_bool"); // returns true/false.
         ```
+
     * Get a list of properties :
+
         ```c++
         std::list<std::string> properties_name = bag.listProperties();
         ```
