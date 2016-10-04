@@ -61,7 +61,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp
-  DEPENDS boost
+  DEPENDS Boost
 )
 
 ###########
@@ -124,9 +124,5 @@ target_link_libraries(${PROJECT_NAME}
 #############
 
 if(CATKIN_ENABLE_TESTING)
-    find_package(catkin REQUIRED COMPONENTS roslib)
-
-    include_directories(${CATKIN_INCLUDE_DIRS})
-
     add_subdirectory(test)
 endif()
