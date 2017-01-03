@@ -10,7 +10,9 @@
 
 #include <list>
 
-#include "property_bag/property.h"
+#include <property_bag/property.h>
+#include <property_bag/Formater.h>
+#include <sstream>
 
 namespace property_bag
 {
@@ -25,27 +27,6 @@ public:
 
   PropertyBag(const PropertyBag& rhs);
   PropertyBag& operator=(const PropertyBag& rhs);
-
-  template <typename... Args>
-  PropertyBag(const Args&... args)
-  {
-    addProperties(args...);
-  }
-
-  template <typename Name, typename T, typename... Args>
-  void addProperties(const Name &name, const T &value, const Args&... args)
-  {
-    // Assert that name is a string (char*)
-    static_assert(is_string<Name>::value,
-      "Error PropertyBag::setValue :\nparameter name must be a string.");
-
-    // Assert that each name as an associated value and vice-versa
-    static_assert(sizeof...(Args)%2==0,
-    "Error PropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value.");
-
-    addProperty(std::forward<const std::string>(name), std::forward<const T>(value));
-    addProperties(std::forward<const Args>(args)...);
-  }
 
   template <typename Name, typename T, typename Doc, typename... Args>
   void addPropertiesWithDoc(const Name &name, const T &value, const Doc &description, const Args&... args)
@@ -83,19 +64,51 @@ public:
     return true;
   }
 
+  template <typename Name, typename T, typename... Args>
+  void addProperties(const Name &name, const T &value, const Args&... args)
+  {
+    // Assert that name is a string (char*)
+    static_assert(is_string<Name>::value,
+      "Error PropertyBag::setValue :\nparameter name must be a string.");
+
+    // Assert that each name as an associated value and vice-versa
+    static_assert(sizeof...(Args)%2==0,
+    "Error PropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value.");
+
+    addProperty(std::forward<const std::string>(name), std::forward<const T>(value));
+    addProperties(std::forward<const Args>(args)...);
+  }
+
+  template <typename... Args>
+  PropertyBag(const Args&... args)
+  {
+    addProperties(args...);
+  }
+
   Property& getProperty(const std::string &name);
 
   const Property& getProperty(const std::string &name) const;
 
   template <typename T>
-  bool getPropertyValue(const std::string &name, T& value)
+  bool getPropertyValue(const std::string &name, T& value, const bool &quiet = true) const
   {
     auto it = properties_.find(name);
 
-    if (it != properties_.end())
+    if (it != properties_.end()){
       value = it->second.get<T>();
-    else
+    }
+    else{
+      if(!quiet){
+        std::stringstream ss;
+        ss<<"Variable: "<<name<<" not found in property bag, available variables: "<<std::endl;
+        auto variales = listProperties();
+        for(auto it = variales.begin(); it != variales.end(); ++it){
+          ss<<"    "<<*it<<std::endl;
+        }
+        throw std::runtime_error(ss.str());
+      }
       return false;
+    }
 
     return true;
   }
@@ -121,6 +134,16 @@ public:
 
   inline size_t size()  const { return properties_.size(); }
   inline size_t empty() const { return properties_.empty(); }
+
+  // Not working
+  /*
+  std::string getSerializedString(){
+    std::stringstream ss;
+    boost::archive::text_oarchive oa(ss);
+    oa << this;
+    return ss.str();
+  }
+  */
 
 private:
 

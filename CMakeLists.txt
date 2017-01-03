@@ -25,7 +25,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
-
+find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
@@ -72,6 +73,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library

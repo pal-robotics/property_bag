@@ -1,21 +1,34 @@
 #include "utils_gtest.h"
-
-#include "property_bag/property_bag.h"
+#include <Eigen/Dense>
+#include <property_bag/property_bag.h>
 
 EXPORT_PROPERTY_NAMED_TYPE(test::Dummy, test__Dummy)
 
 TEST(PropertyBagTest, PropertyBag)
 {
-  property_bag::PropertyBag bag{"my_bool", true, "my_int", 5};
+  Eigen::Vector3d eigen_vector(1., 2., 3.);
+  property_bag::PropertyBag bag{"my_bool", true, "my_int", 5, "my_string", std::string("my_string"),
+                               "my_vector", eigen_vector};
 
   bool my_bool(false);
   int  my_int(55);
+  std::string my_string = "hellooo";
+  Eigen::Vector3d my_vector;
 
   ASSERT_TRUE(bag.getPropertyValue<bool>("my_bool", my_bool));
   ASSERT_TRUE(my_bool);
 
   ASSERT_TRUE(bag.getPropertyValue<int>("my_int", my_int));
   ASSERT_EQ(my_int, 5);
+
+  ASSERT_TRUE(bag.getPropertyValue<std::string>("my_string", my_string));
+  ASSERT_EQ(my_string, "my_string");
+
+
+  ASSERT_TRUE(bag.getPropertyValue<Eigen::Vector3d>("my_vector", my_vector));
+  ASSERT_EQ(my_vector(0), eigen_vector(0));
+  ASSERT_EQ(my_vector(1), eigen_vector(1));
+  ASSERT_EQ(my_vector(2), eigen_vector(2));
 
   bool my_other_bool(false);
   int  my_other_int(55);
@@ -28,7 +41,7 @@ TEST(PropertyBagTest, PropertyBag)
 
   auto list_properties = bag.listProperties();
 
-  ASSERT_EQ(list_properties, (std::list<std::string>{"my_bool", "my_int"}));
+  ASSERT_EQ(list_properties, (std::list<std::string>{"my_bool", "my_int", "my_string", "my_vector"}));
 
   PRINTF("All good at PropertyBagTest::PropertyBag !\n");
 }
@@ -115,23 +128,37 @@ TEST(PropertyBagTest, PropertyBagAddWithDoc)
 
 TEST(PropertyBagTest, PropertyBagSerialization)
 {
-  std::stringstream ss;
 
+  std::string string;
   {
+
+    std::stringstream ss;
+
     boost::archive::text_oarchive oa(ss);
 
     property_bag::PropertyBag bag;
 
+    Eigen::Vector3d eigen_vector(1., 2., 3.);
+
     bag.addPropertiesWithDoc("my_bool", true, "my_bool_doc",
                              "my_int", 5, "my_int_doc",
                              "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc");
+    bag.addProperty("eigen_vector", eigen_vector);
 
     ASSERT_NO_THROW(oa << bag);
+
+    string = ss.str();
   }
 
   PRINTF("PropertyBagTest::PropertyBagSerialization Saved !\n");
 
+  std::cerr<<string<<std::endl;
   {
+
+    std::stringstream ss;
+
+    ss<<string;
+
     boost::archive::text_iarchive ia(ss);
 
     property_bag::PropertyBag bag;
@@ -139,7 +166,7 @@ TEST(PropertyBagTest, PropertyBagSerialization)
     ASSERT_NO_THROW(ia >> bag);
 
     ASSERT_FALSE(bag.empty());
-    ASSERT_EQ(bag.size(), 3);
+    ASSERT_EQ(bag.size(), 4);
 
     ASSERT_TRUE(bag.exists("my_bool"));
     ASSERT_TRUE(bag.exists("my_int"));
