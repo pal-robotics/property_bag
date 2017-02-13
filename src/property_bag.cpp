@@ -53,7 +53,7 @@ std::list<std::string> PropertyBag::listProperties() const
   return list;
 }
 
-bool PropertyBag::exists(const std::string& name)
+bool PropertyBag::exists(const std::string& name) const
 {
   return properties_.find(name) != properties_.end();
 }

@@ -130,7 +130,7 @@ public:
 
   std::list<std::string> listProperties() const;
 
-  bool exists(const std::string& name);
+  bool exists(const std::string& name) const;
 
   inline size_t size()  const { return properties_.size(); }
   inline size_t empty() const { return properties_.empty(); }
