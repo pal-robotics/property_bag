@@ -108,10 +108,12 @@ public:
     else{
       if (handling == RetrievalHandling::THROW){
         std::stringstream ss;
-        ss<<"Variable: "<<name<<" not found in property bag, available variables: "<<std::endl;
+        ss << "Variable '" << name
+           << "' not found in property bag."
+           << "\nAvailable variables:";
         auto variales = listProperties();
-        for(auto it = variales.begin(); it != variales.end(); ++it){
-          ss<<"    "<<*it<<std::endl;
+        for (auto it = variales.begin(); it != variales.end(); ++it){
+          ss << "\n\t" << *it << std::endl;
         }
         throw std::runtime_error(ss.str());
       }
