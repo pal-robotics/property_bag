@@ -36,7 +36,7 @@ public:
   PropertyBag& operator=(const PropertyBag& rhs);
 
   template <typename Name, typename T, typename Doc, typename... Args>
-  void addPropertiesWithDoc(const Name &name, const T &value, const Doc &description, const Args&... args)
+  void addPropertiesWithDoc(const Name &name, T&& value, const Doc &description, Args&&... args)
   {
     // Assert that name is a string (char*)
     static_assert(is_string<Name>::value,
@@ -51,19 +51,19 @@ public:
     "Error PropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value.");
 
     addProperty(std::forward<const std::string>(name),
-                std::forward<const T>(value),
+                std::forward<T>(value),
                 std::forward<const std::string>(description));
 
-    addPropertiesWithDoc(std::forward<const Args>(args)...);
+    addPropertiesWithDoc(std::forward<Args>(args)...);
   }
 
   template <typename T>
-  bool addProperty(const std::string &name, const T& value, const std::string& doc = "")
+  bool addProperty(const std::string &name, T&& value, const std::string& doc = "")
   {
     auto it = properties_.find(name);
 
     if (it == properties_.end())
-      properties_.emplace(name, Property(std::forward<const T>(value),
+      properties_.emplace(name, Property(std::forward<T>(value),
                                          std::forward<const std::string>(doc)));
     else
       return false;
