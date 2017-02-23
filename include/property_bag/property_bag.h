@@ -124,6 +124,17 @@ public:
   }
 
   template <typename T>
+  bool getPropertyValue(const std::string &name, T& value,
+                        const T& default_value) const
+  {
+    bool got = getPropertyValue(name, value, RetrievalHandling::QUIET);
+
+    if (!got) value = default_value;
+
+    return got;
+  }
+
+  template <typename T>
   bool updateProperty(const std::string &name, const T& value)
   {
     auto it = properties_.find(name);
