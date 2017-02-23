@@ -97,7 +97,8 @@ public:
   const Property& getProperty(const std::string &name) const;
 
   template <typename T>
-  bool getPropertyValue(const std::string &name, T& value, const bool &quiet = true) const
+  bool getPropertyValue(const std::string &name, T& value,
+                        const RetrievalHandling handling = RetrievalHandling::QUIET) const
   {
     auto it = properties_.find(name);
 
@@ -105,7 +106,7 @@ public:
       value = it->second.get<T>();
     }
     else{
-      if(!quiet){
+      if (handling == RetrievalHandling::THROW){
         std::stringstream ss;
         ss<<"Variable: "<<name<<" not found in property bag, available variables: "<<std::endl;
         auto variales = listProperties();
