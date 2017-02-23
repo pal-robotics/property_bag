@@ -16,6 +16,13 @@
 
 namespace property_bag
 {
+
+enum class RetrievalHandling : std::size_t
+{
+  QUIET = 0,
+  THROW
+};
+
 class PropertyBag
 {
   using PropertyMap = std::map<std::string, Property>;
