@@ -299,13 +299,13 @@ public:
    * @return the unmangled name, e.g. "cv::Mat", or
    * "pcl::PointCloud<pcl::PointXYZ>"
    */
-  const std::string type_name() const;
+  const std::string type_name() const noexcept;
 
-  const std::type_info& type() const;
+  const std::type_info& type() const noexcept;
 
-  inline bool is_defined()  const { return !flags_[NONE];           }
-  inline bool is_default()  const { return  flags_[DEFAULT_VALUE];  }
-  inline bool is_modified() const { return  flags_[PROVIDED_VALUE]; }
+  inline bool is_defined()  const noexcept { return !flags_[NONE];           }
+  inline bool is_default()  const noexcept { return  flags_[DEFAULT_VALUE];  }
+  inline bool is_modified() const noexcept { return  flags_[PROVIDED_VALUE]; }
 
   /**
    * \brief A doc string for this Property, "foo is for the input
@@ -313,7 +313,7 @@ public:
    * @return A very descriptive human readable string of whatever
    * the Property is holding on to.
    */
-  std::string description() const;
+  std::string description() const noexcept;
 
   /**
    * \brief The doc for this Property is runtime defined, so you may want to update it.
