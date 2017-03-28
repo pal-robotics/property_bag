@@ -163,32 +163,35 @@ private:
 
 class Any
 {
+  using PlaceHolderPtr = shared_ptr<PlaceHolder>;
+
 public:
 
-  Any() { }
+  Any()  = default;
+  ~Any() = default;
 
   template<typename T>
   Any(const T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(const_cast<T&>(value)));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   void operator=(const T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(const_cast<T&>(value)));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   Any(T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(value));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   void operator=(T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(value));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   const std::type_info& type() const
@@ -203,7 +206,7 @@ public:
 
 protected:
 
-  shared_ptr<PlaceHolder> placeholder_;
+  PlaceHolderPtr placeholder_;
 
 private:
 
@@ -216,20 +219,19 @@ private:
   }
 
   template<typename T>
-  friend T& anycast(Any &val);
+  friend T& anycast(Any& val);
 
   template<typename T>
-  friend const T& anycast(const Any &val);
+  friend const T& anycast(const Any& val);
 };
 
 template<typename T>
 T& anycast(Any& val)
 {
   shared_ptr<PlaceHolderImpl<T>> concrete =
-      boost::dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
+      dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (concrete.get() == nullptr)
-    throw PropertyException("Not convertible.");
+  if (empty(concrete)) throw PropertyException("Not convertible.");
 
   return concrete->value_;
 }
@@ -238,10 +240,9 @@ template<typename T>
 const T& anycast(const Any& val)
 {
   shared_ptr<PlaceHolderImpl<T>> concrete =
-      boost::dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
+      dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (concrete.get() == nullptr)
-    throw PropertyException("Not convertible.");
+  if (empty(concrete)) throw PropertyException("Not convertible.");
 
   return concrete->value_;
 }
