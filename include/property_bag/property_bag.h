@@ -186,8 +186,8 @@ public:
 
   bool exists(const std::string& name) const;
 
-  inline size_t size()  const { return properties_.size(); }
-  inline size_t empty() const { return properties_.empty(); }
+  inline size_t size()  const noexcept { return properties_.size(); }
+  inline size_t empty() const noexcept { return properties_.empty(); }
 
   inline void setRetrievalHandling(const RetrievalHandling h) noexcept
   { default_handling_ = h; }
