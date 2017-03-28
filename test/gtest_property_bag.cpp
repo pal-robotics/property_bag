@@ -24,7 +24,6 @@ TEST(PropertyBagTest, PropertyBag)
   ASSERT_TRUE(bag.getPropertyValue<std::string>("my_string", my_string));
   ASSERT_EQ(my_string, "my_string");
 
-
   ASSERT_TRUE(bag.getPropertyValue<Eigen::Vector3d>("my_vector", my_vector));
   ASSERT_EQ(my_vector(0), eigen_vector(0));
   ASSERT_EQ(my_vector(1), eigen_vector(1));
@@ -46,6 +45,69 @@ TEST(PropertyBagTest, PropertyBag)
   PRINTF("All good at PropertyBagTest::PropertyBag !\n");
 }
 
+TEST(PropertyBagTest, PropertyBagDefaultValue)
+{
+  property_bag::PropertyBag bag;
+
+  bool my_bool(false);
+  int  my_int(55);
+  test::Dummy my_dummy;
+
+  ASSERT_NO_THROW(bag.getPropertyValue<bool>("my_bool", my_bool, true););
+  ASSERT_NO_THROW(bag.getPropertyValue<int>("my_int", my_int, 15));
+  ASSERT_NO_THROW(bag.getPropertyValue<test::Dummy>("my_dummy", my_dummy, test::Dummy{2, 6.28, "ok"}));
+
+  ASSERT_TRUE(my_bool);
+  ASSERT_EQ(my_int, 15);
+  ASSERT_EQ(my_dummy, test::Dummy(2, 6.28, "ok"));
+
+  PRINTF("All good at PropertyTest::PropertyBagDefaultValue !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagExist)
+{
+  property_bag::PropertyBag bag{"my_bool", true, "my_int", 5, "my_dummy", test::Dummy()};
+
+  ASSERT_TRUE(bag.exists("my_bool"));
+  ASSERT_TRUE(bag.exists("my_int"));
+  ASSERT_TRUE(bag.exists("my_dummy"));
+
+  ASSERT_FALSE(bag.exists("my_other"));
+
+  PRINTF("All good at PropertyTest::PropertyBagExist !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagSize)
+{
+  property_bag::PropertyBag bag{"my_bool", true, "my_int", 5, "my_dummy", test::Dummy()};
+
+  ASSERT_EQ(bag.size(), 3);
+
+  bag.addProperty("my_other_int", 5);
+
+  ASSERT_EQ(bag.size(), 4);
+
+  ASSERT_TRUE(bag.removeProperty("my_other_int"));
+  ASSERT_FALSE(bag.removeProperty("my_other_int"));
+
+  ASSERT_EQ(bag.size(), 3);
+
+  PRINTF("All good at PropertyTest::PropertyBagSize !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagPropertyHandling)
+{
+  property_bag::PropertyBag bag;
+
+  ASSERT_EQ(bag.getRetrievalHandling(), property_bag::RetrievalHandling::QUIET);
+
+  bag.setRetrievalHandling(property_bag::RetrievalHandling::THROW);
+
+  ASSERT_EQ(bag.getRetrievalHandling(), property_bag::RetrievalHandling::THROW);
+
+  PRINTF("All good at PropertyTest::PropertyBagPropertyHandling !\n");
+}
+
 TEST(PropertyBagTest, PropertyBagThrow)
 {
   property_bag::PropertyBag bag{"my_bool", true, "my_int", 5, "my_dummy", test::Dummy()};
@@ -54,13 +116,42 @@ TEST(PropertyBagTest, PropertyBagThrow)
   int  my_int(55);
   test::Dummy my_dummy;
 
-  ASSERT_NO_THROW(bag.getPropertyValue<bool>("my_bool", my_bool););
-  ASSERT_NO_THROW(bag.getPropertyValue<int>("my_int", my_int));
-  ASSERT_NO_THROW(bag.getPropertyValue<test::Dummy>("my_dummy", my_dummy));
+  bool retrieved = true;
+
+  ASSERT_NO_THROW(retrieved &= bag.getPropertyValue<bool>("my_bool", my_bool););
+  ASSERT_NO_THROW(retrieved &= bag.getPropertyValue<int>("my_int", my_int));
+  ASSERT_NO_THROW(retrieved &= bag.getPropertyValue<test::Dummy>("my_dummy", my_dummy));
+
+  ASSERT_TRUE(retrieved);
+
+  retrieved = false;
+
+  const property_bag::RetrievalHandling QUIET = property_bag::RetrievalHandling::QUIET;
+  const property_bag::RetrievalHandling THROW = property_bag::RetrievalHandling::THROW;
+
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<int>("my_bool", my_int,          QUIET));
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<test::Dummy>("my_int", my_dummy, QUIET));
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<int>("my_dummy", my_int,         QUIET));
+
+  ASSERT_FALSE(retrieved);
+
+  ASSERT_THROW(bag.getPropertyValue<bool>("my_other_bool", my_bool, THROW),  property_bag::PropertyException);
+
+  ASSERT_THROW(bag.getPropertyValue<int>("my_bool", my_int, THROW),          property_bag::PropertyException);
+  ASSERT_THROW(bag.getPropertyValue<test::Dummy>("my_int", my_dummy, THROW), property_bag::PropertyException);
+  ASSERT_THROW(bag.getPropertyValue<int>("my_dummy", my_int, THROW),         property_bag::PropertyException);
+
+  bag.setRetrievalHandling(property_bag::RetrievalHandling::THROW);
 
   ASSERT_THROW(bag.getPropertyValue<int>("my_bool", my_int),          property_bag::PropertyException);
   ASSERT_THROW(bag.getPropertyValue<test::Dummy>("my_int", my_dummy), property_bag::PropertyException);
   ASSERT_THROW(bag.getPropertyValue<int>("my_dummy", my_int),         property_bag::PropertyException);
+
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<int>("my_bool", my_int, QUIET));
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<test::Dummy>("my_int", my_dummy, QUIET));
+  ASSERT_NO_THROW(retrieved |= bag.getPropertyValue<int>("my_dummy", my_int, QUIET));
+
+  ASSERT_FALSE(retrieved);
 
   PRINTF("All good at PropertyTest::PropertyBagThrow !\n");
 }
@@ -104,8 +195,6 @@ TEST(PropertyBagTest, PropertyBagAddWithDoc)
 {
   property_bag::PropertyBag bag;
 
-
-
   bag.addPropertiesWithDoc("my_bool", true, "my_bool_doc",
                            "my_int", 5, "my_int_doc",
                            "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc");
@@ -126,12 +215,33 @@ TEST(PropertyBagTest, PropertyBagAddWithDoc)
   PRINTF("All good at PropertyTest::PropertyBagAddWithDoc !\n");
 }
 
+TEST(PropertyBagTest, PropertyBagConstructorDoc)
+{
+  property_bag::PropertyBag bag{property_bag::PropertyBag::WithDoc{},
+                                "my_bool", true, "my_bool_doc",
+                                "my_int", 5, "my_int_doc",
+                                "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"};
+
+  const auto& prop_bool  = bag.getProperty("my_bool");
+  const auto& prop_int   = bag.getProperty("my_int");
+  const auto& prop_dummy = bag.getProperty("my_dummy");
+
+  ASSERT_TRUE(prop_bool.get<bool>());
+
+  ASSERT_EQ(prop_int.get<int>(), 5);
+  ASSERT_EQ(prop_dummy.get<test::Dummy>(), test::Dummy(2, 6.28, "ok"));
+
+  ASSERT_EQ(prop_bool.description(),  "my_bool_doc");
+  ASSERT_EQ(prop_int.description(),   "my_int_doc");
+  ASSERT_EQ(prop_dummy.description(), "my_dummy_doc");
+
+  PRINTF("All good at PropertyTest::PropertyBagConstructorDoc !\n");
+}
+
 TEST(PropertyBagTest, PropertyBagSerialization)
 {
-
   std::string string;
   {
-
     std::stringstream ss;
 
     boost::archive::text_oarchive oa(ss);
@@ -152,9 +262,7 @@ TEST(PropertyBagTest, PropertyBagSerialization)
 
   PRINTF("PropertyBagTest::PropertyBagSerialization Saved !\n");
 
-  std::cerr<<string<<std::endl;
   {
-
     std::stringstream ss;
 
     ss<<string;
@@ -187,6 +295,31 @@ TEST(PropertyBagTest, PropertyBagSerialization)
   }
 
   PRINTF("All good at PropertyBagTest::PropertyBagSerialization !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagToStr)
+{
+  std::string string;
+  std::stringstream ss;
+  boost::archive::text_oarchive oa(ss);
+
+  property_bag::PropertyBag bag;
+
+  Eigen::Vector3d eigen_vector(1., 2., 3.);
+
+  bag.addPropertiesWithDoc("my_bool", true, "my_bool_doc",
+                           "my_int", 5, "my_int_doc",
+                           "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc");
+  bag.addProperty("eigen_vector", eigen_vector);
+
+  ASSERT_NO_THROW(oa << bag);
+  string = ss.str();
+
+  ASSERT_EQ(bag.to_str(),  string);
+
+  //std::cout << "bag.to_str() " << bag.to_str() << std::endl;
+
+  PRINTF("All good at PropertyBagTest::PropertyBagToStr !\n");
 }
 
 int main(int argc, char **argv)
