@@ -1,7 +1,5 @@
 #include "property_bag/property_bag.h"
 
-#include <map>
-
 namespace property_bag
 {
 
@@ -57,14 +55,6 @@ std::list<std::string> PropertyBag::listProperties() const
 bool PropertyBag::exists(const std::string& name) const
 {
   return properties_.find(name) != properties_.end();
-}
-
-std::string PropertyBag::to_str() const
-{
-  std::stringstream ss;
-  boost::archive::text_oarchive oa(ss);
-  oa << *this;
-  return ss.str();
 }
 
 } // namespace property_bag

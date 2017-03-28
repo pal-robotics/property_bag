@@ -8,10 +8,10 @@
 #ifndef PROPERTY_BAG_PROPERTY_BAG_H
 #define PROPERTY_BAG_PROPERTY_BAG_H
 
-#include <list>
+#include "property_bag/property.h"
 
-#include <property_bag/property.h>
-#include <sstream>
+#include <list>
+#include <map>
 
 namespace property_bag
 {
@@ -27,6 +27,12 @@ class PropertyBag
   using PropertyMap = std::map<std::string, Property>;
 
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
   struct WithDoc {};
 
@@ -194,9 +200,6 @@ public:
   inline RetrievalHandling getRetrievalHandling() const noexcept
   { return default_handling_; }
 
-  // @todo : demangle
-  std::string to_str() const;
-
 private:
 
   Property none_;
@@ -214,27 +217,6 @@ private:
   std::integral_constant<bool,
     std::is_same<typename std::decay<T>::type, char*>::value ||
     std::is_same<typename std::decay<T>::type, const char*>::value>;
-
-  friend class boost::serialization::access;
-
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
-
-  /** save support for SuperCounter */
-  template <typename Archive>
-  void save(Archive &ar, const unsigned int /*version*/) const
-  {
-    ar << BOOST_SERIALIZATION_NVP(properties_);
-  }
-
-  /** load support for SuperCounter */
-  template <typename Archive>
-  void load(Archive &ar, const unsigned int /*version*/)
-  {
-    // Who knows why I can't load directly in properties_ ...
-    PropertyMap map;
-    ar >> boost::serialization::make_nvp("properties_", map);
-    properties_.swap(map);
-  }
 };
 
 } //namespace property_bag
