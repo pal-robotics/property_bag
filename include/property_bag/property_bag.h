@@ -29,6 +29,8 @@ class PropertyBag
 
 public:
 
+  struct WithDoc {};
+
   PropertyBag()          = default;
   virtual ~PropertyBag() = default;
 
@@ -90,6 +92,12 @@ public:
   PropertyBag(const Args&... args)
   {
     addProperties(args...);
+  }
+
+  template <typename... Args>
+  PropertyBag(const WithDoc /*withdoc*/, Args&&... args)
+  {
+    addPropertiesWithDoc(std::forward<Args>(args)...);
   }
 
   Property& getProperty(const std::string &name);
