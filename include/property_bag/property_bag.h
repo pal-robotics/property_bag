@@ -89,9 +89,14 @@ public:
   }
 
   template <typename... Args>
-  PropertyBag(const Args&... args)
+  PropertyBag(Args&&... args) /*:
+                                // figure-out unrolling in map
+                                // Should be something along the line
+                                // build 2 indexes sequences : odd & pair
+                                // and std::get<seq...>(args)
+    properties_{{(typename PropertyMap::value_type(key, val))...}}*/
   {
-    addProperties(args...);
+    addProperties(std::forward<Args>(args)...);
   }
 
   template <typename... Args>
