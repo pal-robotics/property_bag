@@ -13,7 +13,7 @@
 
 #include <boost/serialization/nvp.hpp>
 
-//#include "my_graph/core/utils.h"
+#include "property_bag/utils.h"
 
 /*
  * Boost pre-1.56 has no serialization
@@ -84,15 +84,6 @@ bool empty(const shared_ptr<T>& ptr)
   return ptr.get() == nullptr;
 }
 
-template<typename T>
-const std::string name_of()
-{
-//  static const std::string& name_cache = details::name_of(typeid(T));
-//  return name_cache;
-
-  return typeid(T).name();
-}
-
 struct PropertyException : public std::exception
 {
   PropertyException(const std::string &message);
@@ -111,7 +102,7 @@ public:
   PlaceHolder()          = default;
   virtual ~PlaceHolder() = default;
 
-  inline virtual const std::type_info& type() { return typeid(nullptr); }
+  virtual const std::type_info& type() = 0;
 
 private:
 
@@ -299,7 +290,7 @@ public:
    * @return the unmangled name, e.g. "cv::Mat", or
    * "pcl::PointCloud<pcl::PointXYZ>"
    */
-  const std::string type_name() const noexcept;
+  const std::string& type_name() const noexcept;
 
   const std::type_info& type() const noexcept;
 
@@ -338,6 +329,7 @@ public:
    */
   bool is_same(const Property& rhs) const;
 
+  /// @todo is_castable or such
   bool is_compatible(const Property& rhs) const;
 
   template<typename T>

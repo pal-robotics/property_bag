@@ -47,10 +47,9 @@ Property& Property::operator=(const Property& rhs)
   return *this;
 }
 
-const std::string Property::type_name() const noexcept
+const std::string& Property::type_name() const noexcept
 {
-  //return details::name_of(holder_.type());
-  return holder_.type().name();
+  return details::name_of(holder_.type());
 }
 
 const std::type_info& Property::type() const noexcept

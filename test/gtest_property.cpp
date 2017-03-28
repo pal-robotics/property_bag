@@ -16,8 +16,11 @@ TEST(PropertyTest, PropertyDefault)
 
   ASSERT_TRUE(property.is_same<property_bag::Property::none>());
 
-//  EXPECT_EQ(property.type_name(), "property_bag::Property::none");
+#ifdef __GNUG__
+  EXPECT_EQ(property.type_name(), "property_bag::Property::none");
+#else
   EXPECT_EQ(property.type_name(), "N12property_bag8Property4noneE");
+#endif
 
   ASSERT_EQ(property.description(), "");
 
@@ -57,8 +60,11 @@ TEST(PropertyTest, PropertyDefault)
 
   ASSERT_NO_THROW(property.enforce_type<int>());
 
-//  EXPECT_EQ(property.type_name(), "int");
+#ifdef __GNUG__
+  EXPECT_EQ(property.type_name(), "int");
+#else
   EXPECT_EQ(property.type_name(), "i");
+#endif
 
   ASSERT_EQ(property.get<int>(), 5);
 
