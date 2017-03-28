@@ -195,6 +195,9 @@ public:
   inline RetrievalHandling getRetrievalHandling() const noexcept
   { return default_handling_; }
 
+  // @todo : demangle
+  std::string to_str() const;
+
 private:
 
   Property none_;

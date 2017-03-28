@@ -59,4 +59,12 @@ bool PropertyBag::exists(const std::string& name) const
   return properties_.find(name) != properties_.end();
 }
 
+std::string PropertyBag::to_str() const
+{
+  std::stringstream ss;
+  boost::archive::text_oarchive oa(ss);
+  oa << *this;
+  return ss.str();
+}
+
 } // namespace property_bag
