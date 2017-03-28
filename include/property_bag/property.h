@@ -33,13 +33,19 @@ namespace property_bag
 template <class T>
 using shared_ptr = boost::shared_ptr<T>;
 
-template <typename T>
-boost::shared_ptr<T> make_ptr(const T& arg)
+template <typename T, typename... Args>
+shared_ptr<T> make_ptr(Args&&... args)
 {
-  return boost::make_shared<T>(arg);
+  return boost::make_shared<T>(std::forward<Args>(args)...);
 }
 
+template <typename Tout, typename Tin>
+shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
+{
+  return boost::dynamic_pointer_cast<Tout>(std::forward<Tin>(in));
+}
 } // namespace property_bag
+
 #else
 
 #include <memory>
@@ -50,10 +56,16 @@ namespace property_bag
 template <class T>
 using shared_ptr = std::shared_ptr<T>;
 
-template <typename T>
-std::shared_ptr<T> make_ptr(const T& arg)
+template <typename T, typename... Args>
+shared_ptr<T> make_ptr(Args&&... args)
 {
-  return std::make_shared<T>(arg);
+  return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template <typename Tout, typename Tin>
+shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
+{
+  return std::dynamic_pointer_cast<Tout>(std::forward<Tin>(in));
 }
 
 } // namespace property_bag
@@ -65,6 +77,12 @@ namespace boost{ namespace serialization{ class access; }}
 
 namespace property_bag
 {
+
+template <typename T>
+bool empty(const shared_ptr<T>& ptr)
+{
+  return ptr.get() == nullptr;
+}
 
 template<typename T>
 const std::string name_of()
