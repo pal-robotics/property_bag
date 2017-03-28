@@ -11,7 +11,6 @@
 #include <list>
 
 #include <property_bag/property.h>
-#include <property_bag/Formater.h>
 #include <sstream>
 
 namespace property_bag
