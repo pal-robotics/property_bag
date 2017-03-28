@@ -111,7 +111,7 @@ public:
   PlaceHolder()          = default;
   virtual ~PlaceHolder() = default;
 
-  virtual const std::type_info& type() { return typeid(nullptr); }
+  inline virtual const std::type_info& type() { return typeid(nullptr); }
 
 private:
 
@@ -129,15 +129,15 @@ class PlaceHolderImpl : public PlaceHolder
 {
 public:
 
-  PlaceHolderImpl() : PlaceHolder() { }
+  PlaceHolderImpl() = default;
 
-  PlaceHolderImpl(const T &value) :
+  PlaceHolderImpl(const T& value) :
     PlaceHolder(),
-    value_(std::forward<const T>(value)) { }
+    value_(value) { }
 
   ~PlaceHolderImpl() = default;
 
-  inline const std::type_info& type() { return typeid(T); }
+  inline const std::type_info& type() override { return typeid(T); }
 
 protected:
 
