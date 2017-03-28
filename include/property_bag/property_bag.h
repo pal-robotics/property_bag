@@ -234,7 +234,7 @@ private:
     // Who knows why I can't load directly in properties_ ...
     PropertyMap map;
     ar >> boost::serialization::make_nvp("properties_", map);
-    properties_ = map;
+    properties_.swap(map);
   }
 };
 
