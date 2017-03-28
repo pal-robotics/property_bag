@@ -6,6 +6,7 @@ namespace property_bag
 {
 
 PropertyBag::PropertyBag(const PropertyBag& rhs) :
+  default_handling_(rhs.default_handling_),
   properties_(rhs.properties_)
 {
   //

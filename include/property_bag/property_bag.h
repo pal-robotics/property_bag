@@ -111,12 +111,26 @@ public:
 
   template <typename T>
   bool getPropertyValue(const std::string &name, T& value,
-                        const RetrievalHandling handling = RetrievalHandling::QUIET) const
+                        const RetrievalHandling handling) const
   {
     auto it = properties_.find(name);
 
     if (it != properties_.end()){
-      value = it->second.get<T>();
+
+      if (handling == RetrievalHandling::QUIET)
+      {
+        try{
+          value = it->second.get<T>();
+        }
+        catch (PropertyException& /*e*/)
+        {
+          return false;
+        }
+      }
+      else
+      {
+        value = it->second.get<T>();
+      }
     }
     else{
       if (handling == RetrievalHandling::THROW){
@@ -128,12 +142,18 @@ public:
         for (auto it = variales.begin(); it != variales.end(); ++it){
           ss << "\n\t" << *it << std::endl;
         }
-        throw std::runtime_error(ss.str());
+        throw PropertyException(ss.str());
       }
       return false;
     }
 
     return true;
+  }
+
+  template <typename T>
+  bool getPropertyValue(const std::string &name, T& value) const
+  {
+    return getPropertyValue(name, value, default_handling_);
   }
 
   template <typename T>
@@ -169,19 +189,17 @@ public:
   inline size_t size()  const { return properties_.size(); }
   inline size_t empty() const { return properties_.empty(); }
 
-  // Not working
-  /*
-  std::string getSerializedString(){
-    std::stringstream ss;
-    boost::archive::text_oarchive oa(ss);
-    oa << this;
-    return ss.str();
-  }
-  */
+  inline void setRetrievalHandling(const RetrievalHandling h) noexcept
+  { default_handling_ = h; }
+
+  inline RetrievalHandling getRetrievalHandling() const noexcept
+  { return default_handling_; }
 
 private:
 
   Property none_;
+
+  RetrievalHandling default_handling_ = RetrievalHandling::QUIET;
 
   PropertyMap properties_;
 
