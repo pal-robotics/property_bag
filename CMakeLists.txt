@@ -80,7 +80,6 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/property.cpp
   src/property_bag.cpp
-  src/registry.cpp # <-- must remain after property*
 )
 target_link_libraries(${PROJECT_NAME}
    ${catkin_LIBRARIES} ${Boost_LIBRARIES}

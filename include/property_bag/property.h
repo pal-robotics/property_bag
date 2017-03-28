@@ -71,10 +71,6 @@ shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
 } // namespace property_bag
 #endif
 
-
-
-namespace boost{ namespace serialization{ class access; }}
-
 namespace property_bag
 {
 
@@ -103,13 +99,6 @@ public:
   virtual ~PlaceHolder() = default;
 
   virtual const std::type_info& type() = 0;
-
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& /*ar*/, const unsigned int /*version*/) { }
 };
 
 // Forward declaration
@@ -119,6 +108,12 @@ template<typename T>
 class PlaceHolderImpl : public PlaceHolder
 {
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
   PlaceHolderImpl() = default;
 
@@ -139,17 +134,6 @@ protected:
 
   template<typename TT>
   friend const TT& anycast(const Any &val);
-
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(PlaceHolder);
-    ar & BOOST_SERIALIZATION_NVP(value_);
-  }
 };
 
 class Any
@@ -157,6 +141,12 @@ class Any
   using PlaceHolderPtr = shared_ptr<PlaceHolder>;
 
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
   Any()  = default;
   ~Any() = default;
@@ -199,16 +189,6 @@ protected:
 
   PlaceHolderPtr placeholder_;
 
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_NVP(placeholder_);
-  }
-
   template<typename T>
   friend T& anycast(Any& val);
 
@@ -245,6 +225,12 @@ const T& anycast(const Any& val)
 class Property
 {
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
   enum
   {
@@ -439,20 +425,8 @@ protected:
   std::string description_;
 
   std::bitset<3> flags_;
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_NVP(holder_);
-    ar & BOOST_SERIALIZATION_NVP(description_);
-    ar & BOOST_SERIALIZATION_NVP(flags_);
-  }
 };
 
 } //namespace property_bag
-
-#include "property_bag/property_serialization.h"
 
 #endif // PROPERTY_BAG_PROPERTY_H

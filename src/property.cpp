@@ -1,5 +1,4 @@
 #include "property_bag/property.h"
-#include <property_bag/eigen_boost_serialization.h>
 
 namespace property_bag
 {
@@ -85,8 +84,3 @@ void Property::copy_holder(const Property& rhs)
 }
 
 } // namespace property_bag
-
-// Specific boost specializations for Eigen
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Vector3d, eigen_vector3)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::VectorXd, eigen_vectorxd)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Quaterniond, eigen_quaterniond)
