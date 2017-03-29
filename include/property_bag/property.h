@@ -13,7 +13,7 @@
 
 #include <boost/serialization/nvp.hpp>
 
-//#include "my_graph/core/utils.h"
+#include "property_bag/utils.h"
 
 /*
  * Boost pre-1.56 has no serialization
@@ -33,13 +33,19 @@ namespace property_bag
 template <class T>
 using shared_ptr = boost::shared_ptr<T>;
 
-template <typename T>
-boost::shared_ptr<T> make_ptr(const T& arg)
+template <typename T, typename... Args>
+shared_ptr<T> make_ptr(Args&&... args)
 {
-  return boost::make_shared<T>(arg);
+  return boost::make_shared<T>(std::forward<Args>(args)...);
 }
 
+template <typename Tout, typename Tin>
+shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
+{
+  return boost::dynamic_pointer_cast<Tout>(std::forward<Tin>(in));
+}
 } // namespace property_bag
+
 #else
 
 #include <memory>
@@ -50,29 +56,28 @@ namespace property_bag
 template <class T>
 using shared_ptr = std::shared_ptr<T>;
 
-template <typename T>
-std::shared_ptr<T> make_ptr(const T& arg)
+template <typename T, typename... Args>
+shared_ptr<T> make_ptr(Args&&... args)
 {
-  return std::make_shared<T>(arg);
+  return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template <typename Tout, typename Tin>
+shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
+{
+  return std::dynamic_pointer_cast<Tout>(std::forward<Tin>(in));
 }
 
 } // namespace property_bag
 #endif
 
-
-
-namespace boost{ namespace serialization{ class access; }}
-
 namespace property_bag
 {
 
-template<typename T>
-const std::string name_of()
+template <typename T>
+bool empty(const shared_ptr<T>& ptr)
 {
-//  static const std::string& name_cache = details::name_of(typeid(T));
-//  return name_cache;
-
-  return typeid(T).name();
+  return ptr.get() == nullptr;
 }
 
 struct PropertyException : public std::exception
@@ -93,14 +98,7 @@ public:
   PlaceHolder()          = default;
   virtual ~PlaceHolder() = default;
 
-  virtual const std::type_info& type() { return typeid(nullptr); }
-
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& /*ar*/, const unsigned int /*version*/) { }
+  virtual const std::type_info& type() = 0;
 };
 
 // Forward declaration
@@ -111,15 +109,21 @@ class PlaceHolderImpl : public PlaceHolder
 {
 public:
 
-  PlaceHolderImpl() : PlaceHolder() { }
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
-  PlaceHolderImpl(const T &value) :
+  PlaceHolderImpl() = default;
+
+  PlaceHolderImpl(const T& value) :
     PlaceHolder(),
-    value_(std::forward<const T>(value)) { }
+    value_(value) { }
 
   ~PlaceHolderImpl() = default;
 
-  inline const std::type_info& type() { return typeid(T); }
+  inline const std::type_info& type() override { return typeid(T); }
 
 protected:
 
@@ -130,47 +134,45 @@ protected:
 
   template<typename TT>
   friend const TT& anycast(const Any &val);
-
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(PlaceHolder);
-    ar & BOOST_SERIALIZATION_NVP(value_);
-  }
 };
 
 class Any
 {
+  using PlaceHolderPtr = shared_ptr<PlaceHolder>;
+
 public:
 
-  Any() { }
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
+
+  Any()  = default;
+  ~Any() = default;
 
   template<typename T>
   Any(const T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(const_cast<T&>(value)));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   void operator=(const T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(const_cast<T&>(value)));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   Any(T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(value));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   template<typename T>
   void operator=(T& value)
   {
-    placeholder_.reset(new PlaceHolderImpl<T>(value));
+    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
   }
 
   const std::type_info& type() const
@@ -185,33 +187,22 @@ public:
 
 protected:
 
-  shared_ptr<PlaceHolder> placeholder_;
-
-private:
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_NVP(placeholder_);
-  }
+  PlaceHolderPtr placeholder_;
 
   template<typename T>
-  friend T& anycast(Any &val);
+  friend T& anycast(Any& val);
 
   template<typename T>
-  friend const T& anycast(const Any &val);
+  friend const T& anycast(const Any& val);
 };
 
 template<typename T>
 T& anycast(Any& val)
 {
   shared_ptr<PlaceHolderImpl<T>> concrete =
-      boost::dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
+      dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (concrete.get() == nullptr)
-    throw PropertyException("Not convertible.");
+  if (empty(concrete)) throw PropertyException("Not convertible.");
 
   return concrete->value_;
 }
@@ -220,10 +211,9 @@ template<typename T>
 const T& anycast(const Any& val)
 {
   shared_ptr<PlaceHolderImpl<T>> concrete =
-      boost::dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
+      dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (concrete.get() == nullptr)
-    throw PropertyException("Not convertible.");
+  if (empty(concrete)) throw PropertyException("Not convertible.");
 
   return concrete->value_;
 }
@@ -235,6 +225,12 @@ const T& anycast(const Any& val)
 class Property
 {
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
 
   enum
   {
@@ -280,13 +276,13 @@ public:
    * @return the unmangled name, e.g. "cv::Mat", or
    * "pcl::PointCloud<pcl::PointXYZ>"
    */
-  const std::string type_name() const;
+  const std::string& type_name() const noexcept;
 
-  const std::type_info& type() const;
+  const std::type_info& type() const noexcept;
 
-  inline bool is_defined()  const { return !flags_[NONE];           }
-  inline bool is_default()  const { return  flags_[DEFAULT_VALUE];  }
-  inline bool is_modified() const { return  flags_[PROVIDED_VALUE]; }
+  inline bool is_defined()  const noexcept { return !flags_[NONE];           }
+  inline bool is_default()  const noexcept { return  flags_[DEFAULT_VALUE];  }
+  inline bool is_modified() const noexcept { return  flags_[PROVIDED_VALUE]; }
 
   /**
    * \brief A doc string for this Property, "foo is for the input
@@ -294,7 +290,7 @@ public:
    * @return A very descriptive human readable string of whatever
    * the Property is holding on to.
    */
-  std::string description() const;
+  std::string description() const noexcept;
 
   /**
    * \brief The doc for this Property is runtime defined, so you may want to update it.
@@ -319,6 +315,7 @@ public:
    */
   bool is_same(const Property& rhs) const;
 
+  /// @todo is_castable or such
   bool is_compatible(const Property& rhs) const;
 
   template<typename T>
@@ -428,20 +425,8 @@ protected:
   std::string description_;
 
   std::bitset<3> flags_;
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/)
-  {
-    ar & BOOST_SERIALIZATION_NVP(holder_);
-    ar & BOOST_SERIALIZATION_NVP(description_);
-    ar & BOOST_SERIALIZATION_NVP(flags_);
-  }
 };
 
 } //namespace property_bag
-
-#include "property_bag/property_serialization.h"
 
 #endif // PROPERTY_BAG_PROPERTY_H

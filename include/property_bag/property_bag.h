@@ -8,11 +8,10 @@
 #ifndef PROPERTY_BAG_PROPERTY_BAG_H
 #define PROPERTY_BAG_PROPERTY_BAG_H
 
-#include <list>
+#include "property_bag/property.h"
 
-#include <property_bag/property.h>
-#include <property_bag/Formater.h>
-#include <sstream>
+#include <list>
+#include <map>
 
 namespace property_bag
 {
@@ -28,6 +27,14 @@ class PropertyBag
   using PropertyMap = std::map<std::string, Property>;
 
 public:
+
+  /**
+   * @brief 'pimpl' struct to enable access to
+   * private members during serialization
+   */
+  struct serialization_accessor;
+
+  struct WithDoc {};
 
   PropertyBag()          = default;
   virtual ~PropertyBag() = default;
@@ -87,9 +94,20 @@ public:
   }
 
   template <typename... Args>
-  PropertyBag(const Args&... args)
+  PropertyBag(Args&&... args) /*:
+                                // figure-out unrolling in map
+                                // Should be something along the line
+                                // build 2 indexes sequences : odd & pair
+                                // and std::get<seq...>(args)
+    properties_{{(typename PropertyMap::value_type(key, val))...}}*/
   {
-    addProperties(args...);
+    addProperties(std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  PropertyBag(const WithDoc /*withdoc*/, Args&&... args)
+  {
+    addPropertiesWithDoc(std::forward<Args>(args)...);
   }
 
   Property& getProperty(const std::string &name);
@@ -98,12 +116,26 @@ public:
 
   template <typename T>
   bool getPropertyValue(const std::string &name, T& value,
-                        const RetrievalHandling handling = RetrievalHandling::QUIET) const
+                        const RetrievalHandling handling) const
   {
     auto it = properties_.find(name);
 
     if (it != properties_.end()){
-      value = it->second.get<T>();
+
+      if (handling == RetrievalHandling::QUIET)
+      {
+        try{
+          value = it->second.get<T>();
+        }
+        catch (PropertyException& /*e*/)
+        {
+          return false;
+        }
+      }
+      else
+      {
+        value = it->second.get<T>();
+      }
     }
     else{
       if (handling == RetrievalHandling::THROW){
@@ -115,12 +147,18 @@ public:
         for (auto it = variales.begin(); it != variales.end(); ++it){
           ss << "\n\t" << *it << std::endl;
         }
-        throw std::runtime_error(ss.str());
+        throw PropertyException(ss.str());
       }
       return false;
     }
 
     return true;
+  }
+
+  template <typename T>
+  bool getPropertyValue(const std::string &name, T& value) const
+  {
+    return getPropertyValue(name, value, default_handling_);
   }
 
   template <typename T>
@@ -153,22 +191,20 @@ public:
 
   bool exists(const std::string& name) const;
 
-  inline size_t size()  const { return properties_.size(); }
-  inline size_t empty() const { return properties_.empty(); }
+  inline size_t size()  const noexcept { return properties_.size(); }
+  inline size_t empty() const noexcept { return properties_.empty(); }
 
-  // Not working
-  /*
-  std::string getSerializedString(){
-    std::stringstream ss;
-    boost::archive::text_oarchive oa(ss);
-    oa << this;
-    return ss.str();
-  }
-  */
+  inline void setRetrievalHandling(const RetrievalHandling h) noexcept
+  { default_handling_ = h; }
+
+  inline RetrievalHandling getRetrievalHandling() const noexcept
+  { return default_handling_; }
 
 private:
 
   Property none_;
+
+  RetrievalHandling default_handling_ = RetrievalHandling::QUIET;
 
   PropertyMap properties_;
 
@@ -181,27 +217,6 @@ private:
   std::integral_constant<bool,
     std::is_same<typename std::decay<T>::type, char*>::value ||
     std::is_same<typename std::decay<T>::type, const char*>::value>;
-
-  friend class boost::serialization::access;
-
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
-
-  /** save support for SuperCounter */
-  template <typename Archive>
-  void save(Archive &ar, const unsigned int /*version*/) const
-  {
-    ar << BOOST_SERIALIZATION_NVP(properties_);
-  }
-
-  /** load support for SuperCounter */
-  template <typename Archive>
-  void load(Archive &ar, const unsigned int /*version*/)
-  {
-    // Who knows why I can't load directly in properties_ ...
-    PropertyMap map;
-    ar >> boost::serialization::make_nvp("properties_", map);
-    properties_ = map;
-  }
 };
 
 } //namespace property_bag

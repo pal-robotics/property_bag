@@ -6,13 +6,13 @@ include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
-                message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++11 support.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++11 support.")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
-                message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++0x support.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++0x support.")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+  message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 if(UNIX)
@@ -22,9 +22,13 @@ if(UNIX)
 endif(UNIX)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE Release)
+  set (CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
+#OPTION(BUILD_TESTS "Build Unit tests" ON)
+
+# we actually only use the build system,
+# @todo rm catkin deps
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
@@ -32,27 +36,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Boost COMPONENTS serialization REQUIRED)
-
-
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
-
-## To declare and build dynamic reconfigure parameters within this
-## package, follow these steps:
-## * In the file package.xml:
-##   * add a build_depend and a run_depend tag for "dynamic_reconfigure"
-## * In this file (CMakeLists.txt):
-##   * add "dynamic_reconfigure" to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * uncomment the "generate_dynamic_reconfigure_options" section below
-##     and list every .cfg file to be processed
-
-## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
 
 ###################################
 ## catkin specific configuration ##
@@ -71,7 +54,6 @@ catkin_package(
 
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${Eigen_INCLUDE_DIRS}
 )
@@ -80,10 +62,9 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/property.cpp
   src/property_bag.cpp
-  src/registry.cpp # <-- must remain after property*
 )
 target_link_libraries(${PROJECT_NAME}
-   ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+   ${Boost_LIBRARIES}
 )
 
 #############
@@ -107,5 +88,5 @@ install(DIRECTORY include/
 #############
 
 if(CATKIN_ENABLE_TESTING)
-    add_subdirectory(test)
-endif()
+  add_subdirectory(test)
+endif(CATKIN_ENABLE_TESTING)

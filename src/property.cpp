@@ -1,5 +1,4 @@
 #include "property_bag/property.h"
-#include <property_bag/eigen_boost_serialization.h>
 
 namespace property_bag
 {
@@ -47,13 +46,12 @@ Property& Property::operator=(const Property& rhs)
   return *this;
 }
 
-const std::string Property::type_name() const
+const std::string& Property::type_name() const noexcept
 {
-  //return details::name_of(holder_.type());
-  return holder_.type().name();
+  return details::name_of(holder_.type());
 }
 
-const std::type_info& Property::type() const
+const std::type_info& Property::type() const noexcept
 {
   return holder_.type();
 }
@@ -63,7 +61,7 @@ void Property::description(const std::string& description_str)
   description_ = description_str;
 }
 
-std::string Property::description() const
+std::string Property::description() const noexcept
 {
   return description_;
 }
@@ -86,8 +84,3 @@ void Property::copy_holder(const Property& rhs)
 }
 
 } // namespace property_bag
-
-// Specific boost specializations for Eigen
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Vector3d, eigen_vector3)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::VectorXd, eigen_vectorxd)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Quaterniond, eigen_quaterniond)
