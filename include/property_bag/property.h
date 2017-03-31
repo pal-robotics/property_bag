@@ -11,8 +11,6 @@
 #include <bitset>
 #include <sstream>
 
-#include <boost/serialization/nvp.hpp>
-
 #include "property_bag/utils.h"
 
 /*

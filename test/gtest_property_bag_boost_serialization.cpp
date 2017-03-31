@@ -1,7 +1,7 @@
 #include "utils_gtest.h"
 
-#include "property_bag/property_bag_boost_serialization.h"
-#include "property_bag/eigen_boost_serialization.h"
+#include "property_bag/serialization/property_bag_boost_serialization.h"
+#include "property_bag/serialization/eigen_boost_serialization.h"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
