@@ -8,7 +8,7 @@
 #ifndef PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
 #define PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
 
-#include "property_bag/property.h"
+#include <property_bag/property.h>
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/shared_ptr.hpp>

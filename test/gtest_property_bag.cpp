@@ -236,6 +236,70 @@ TEST(PropertyBagTest, PropertyBagConstructorDoc)
   PRINTF("All good at PropertyTest::PropertyBagConstructorDoc !\n");
 }
 
+TEST(PropertyBagTest, PropertyPropertyBag)
+{
+  property_bag::Property property{
+    property_bag::PropertyBag{property_bag::PropertyBag::WithDoc{},
+                              "my_bool", true, "my_bool_doc",
+                              "my_int", 5, "my_int_doc",
+                              "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"},
+      "my_prop_bag"};
+
+  ASSERT_TRUE(property.is_same<property_bag::PropertyBag>());
+
+  ASSERT_TRUE(property.is_defined());
+  ASSERT_TRUE(property.is_default());
+  ASSERT_FALSE(property.is_modified());
+
+  ASSERT_EQ(property.description(), "my_prop_bag");
+
+  ASSERT_TRUE(property.is_compatible<property_bag::PropertyBag>());
+  ASSERT_FALSE(property.is_compatible<int>());
+
+  ASSERT_NO_THROW(property.enforce_type<property_bag::PropertyBag>());
+  ASSERT_THROW(property.enforce_type<int>(), property_bag::PropertyException);
+
+  const property_bag::PropertyBag* my_bag = nullptr;
+  ASSERT_NO_THROW(my_bag = &property.get<property_bag::PropertyBag>(); );
+
+  ASSERT_FALSE(my_bag == nullptr);
+
+  if (my_bag != nullptr)
+  {
+    const auto& prop_bool  = my_bag->getProperty("my_bool");
+    const auto& prop_int   = my_bag->getProperty("my_int");
+    const auto& prop_dummy = my_bag->getProperty("my_dummy");
+
+    ASSERT_TRUE(prop_bool.get<bool>());
+
+    ASSERT_EQ(prop_int.get<int>(), 5);
+    ASSERT_EQ(prop_dummy.get<test::Dummy>(), test::Dummy(2, 6.28, "ok"));
+
+    ASSERT_EQ(prop_bool.description(),  "my_bool_doc");
+    ASSERT_EQ(prop_int.description(),   "my_int_doc");
+    ASSERT_EQ(prop_dummy.description(), "my_dummy_doc");
+  }
+
+  ASSERT_THROW(property.get<int>(), property_bag::PropertyException);
+
+  ASSERT_NO_THROW(property.set(property_bag::PropertyBag{"my_bool", true}));
+
+//  ASSERT_EQ(property.get<property_bag::PropertyBag>(), property_bag::PropertyBag{"my_bool", true});
+
+  ASSERT_TRUE(property.is_defined());
+  ASSERT_FALSE(property.is_default());
+  ASSERT_TRUE(property.is_modified());
+
+  property_bag::Property property_int(1, "my_int");
+
+  ASSERT_FALSE(property.is_same(property_int));
+  ASSERT_FALSE(property.is_compatible(property_int));
+
+  ASSERT_NO_THROW(property = property_int);
+
+  PRINTF("All good at PropertyTest::PropertyPropertyBag !\n");
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

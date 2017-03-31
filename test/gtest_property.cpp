@@ -121,10 +121,87 @@ TEST(PropertyTest, PropertyBool)
   ASSERT_NO_THROW(property_bool = property_int);
 
   PRINTF("All good at PropertyTest::PropertyBool !\n");
+}
 
-//  Property property_float(1.1f, "my_float");
-//  Property property_double(double(1.2), "my_double");
-//  Property property_dummy(test::Dummy(), "my_dummy");
+TEST(PropertyTest, PropertyMoveConstructor)
+{
+  property_bag::Property property_bool(property_bag::Property(true, "my_bool"));
+
+  ASSERT_TRUE(property_bool.is_same<bool>());
+
+  ASSERT_TRUE(property_bool.is_defined());
+  ASSERT_TRUE(property_bool.is_default());
+  ASSERT_FALSE(property_bool.is_modified());
+
+  ASSERT_EQ(property_bool.description(), "my_bool");
+
+  ASSERT_TRUE(property_bool.is_compatible<bool>());
+  ASSERT_FALSE(property_bool.is_compatible<int>());
+
+  ASSERT_NO_THROW(property_bool.enforce_type<bool>());
+  ASSERT_THROW(property_bool.enforce_type<int>(), property_bag::PropertyException);
+
+  ASSERT_NO_THROW(auto& my_bool = property_bool.get<bool>(); UNUSED(my_bool););
+
+  ASSERT_THROW(property_bool.get<int>(), property_bag::PropertyException);
+
+  ASSERT_EQ(property_bool.get<bool>(), true);
+
+  ASSERT_NO_THROW(property_bool.set(false));
+
+  ASSERT_EQ(property_bool.get<bool>(), false);
+
+  ASSERT_TRUE(property_bool.is_defined());
+  ASSERT_FALSE(property_bool.is_default());
+  ASSERT_TRUE(property_bool.is_modified());
+
+  property_bag::Property property_int(1, "my_int");
+
+  ASSERT_FALSE(property_bool.is_same(property_int));
+  ASSERT_FALSE(property_bool.is_compatible(property_int));
+
+  ASSERT_NO_THROW(property_bool = property_int);
+}
+
+TEST(PropertyTest, PropertyCopyConstructor)
+{
+  property_bag::Property property_bool_tmp(true, "my_bool");
+  property_bag::Property property_bool(property_bool_tmp);
+
+  ASSERT_TRUE(property_bool.is_same<bool>());
+
+  ASSERT_TRUE(property_bool.is_defined());
+  ASSERT_TRUE(property_bool.is_default());
+  ASSERT_FALSE(property_bool.is_modified());
+
+  ASSERT_EQ(property_bool.description(), "my_bool");
+
+  ASSERT_TRUE(property_bool.is_compatible<bool>());
+  ASSERT_FALSE(property_bool.is_compatible<int>());
+
+  ASSERT_NO_THROW(property_bool.enforce_type<bool>());
+  ASSERT_THROW(property_bool.enforce_type<int>(), property_bag::PropertyException);
+
+  ASSERT_NO_THROW(auto& my_bool = property_bool.get<bool>(); UNUSED(my_bool););
+
+  ASSERT_THROW(property_bool.get<int>(), property_bag::PropertyException);
+
+  ASSERT_EQ(property_bool.get<bool>(), true);
+
+  ASSERT_NO_THROW(property_bool.set(false));
+
+  ASSERT_EQ(property_bool.get<bool>(), false);
+
+  ASSERT_TRUE(property_bool.is_defined());
+  ASSERT_FALSE(property_bool.is_default());
+  ASSERT_TRUE(property_bool.is_modified());
+
+  property_bag::Property property_int(1, "my_int");
+
+  ASSERT_FALSE(property_bool.is_same(property_int));
+  ASSERT_FALSE(property_bool.is_compatible(property_int));
+
+  ASSERT_NO_THROW(property_bool = property_int);
 }
 
 int main(int argc, char **argv)

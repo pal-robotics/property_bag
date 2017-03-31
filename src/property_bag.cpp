@@ -10,9 +10,24 @@ PropertyBag::PropertyBag(const PropertyBag& rhs) :
   //
 }
 
+PropertyBag::PropertyBag(PropertyBag&& rhs) :
+  default_handling_(rhs.default_handling_),
+  properties_(std::move(rhs.properties_))
+{
+  //
+}
+
 PropertyBag& PropertyBag::operator=(const PropertyBag& rhs)
 {
+  default_handling_ = rhs.default_handling_;
   this->properties_ = rhs.properties_;
+  return *this;
+}
+
+PropertyBag& PropertyBag::operator=(PropertyBag&& rhs)
+{
+  default_handling_ = rhs.default_handling_;
+  this->properties_ = std::move(rhs.properties_);
   return *this;
 }
 
@@ -55,6 +70,26 @@ std::list<std::string> PropertyBag::listProperties() const
 bool PropertyBag::exists(const std::string& name) const
 {
   return properties_.find(name) != properties_.end();
+}
+
+PropertyBag::iterator PropertyBag::begin()
+{
+  return properties_.begin();
+}
+
+PropertyBag::const_iterator PropertyBag::begin() const
+{
+  return properties_.begin();
+}
+
+PropertyBag::iterator PropertyBag::end()
+{
+  return properties_.end();
+}
+
+PropertyBag::const_iterator PropertyBag::end() const
+{
+  return properties_.end();
 }
 
 } // namespace property_bag

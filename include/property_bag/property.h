@@ -11,8 +11,6 @@
 #include <bitset>
 #include <sstream>
 
-#include <boost/serialization/nvp.hpp>
-
 #include "property_bag/utils.h"
 
 /*
@@ -26,6 +24,15 @@
 
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
+
+namespace
+{
+
+template<typename A, typename B>
+using disable_if_same_or_derived = typename std::enable_if<
+        !std::is_base_of<A,typename std::remove_reference<B>::type >::value>;
+
+}
 
 namespace property_bag
 {
@@ -91,6 +98,10 @@ struct PropertyException : public std::exception
 
 namespace details
 {
+/**
+ * @brief The PlaceHolder class.
+ * A place holder base class.
+ */
 class PlaceHolder
 {
 public:
@@ -101,9 +112,15 @@ public:
   virtual const std::type_info& type() = 0;
 };
 
+using PlaceHolderPtr = shared_ptr<PlaceHolder>;
+
 // Forward declaration
 class Any;
 
+/**
+ * @brief The PlaceHolderImpl class.
+ * The actual place holder.
+ */
 template<typename T>
 class PlaceHolderImpl : public PlaceHolder
 {
@@ -115,14 +132,80 @@ public:
    */
   struct serialization_accessor;
 
+  /**
+   * @brief PlaceHolderImpl. Default constructor
+   */
   PlaceHolderImpl() = default;
 
-  PlaceHolderImpl(const T& value) :
+  /**
+   * @brief PlaceHolderImpl
+   * copy (T) constructor
+   * @param value
+   */
+  explicit PlaceHolderImpl(const T& value) :
     PlaceHolder(),
     value_(value) { }
 
+  /**
+   * @brief PlaceHolderImpl
+   * move (T) constructor
+   * @param value
+   */
+  explicit PlaceHolderImpl(T&& value) :
+    PlaceHolder(),
+    value_(std::move(value)) { }
+
+  /**
+   * @brief PlaceHolderImpl
+   * copy (PlaceHolderImpl<T>) constructor
+   * @param o
+   */
+  explicit PlaceHolderImpl(const PlaceHolderImpl<T>& o) :
+    PlaceHolder(),
+    value_(o.value_) { }
+
+  /**
+   * @brief PlaceHolderImpl
+   * move (PlaceHolderImpl<T>) constructor
+   * @param o
+   */
+  explicit PlaceHolderImpl(PlaceHolderImpl<T>&& o) :
+    PlaceHolder(),
+    value_(std::move(o.value_)) { }
+
+  /**
+   * @brief operator =
+   * copy (PlaceHolderImpl<T>) assignment
+   * @param o. Another const PlaceHolderImpl<T>
+   * @return this PlaceHolderImpl<T>
+   */
+  PlaceHolderImpl<T>& operator=(const PlaceHolderImpl<T>& o)
+  {
+    value_ = o.value_;
+    return *this;
+  }
+
+  /**
+   * @brief operator =
+   * move (PlaceHolderImpl<T>) assignment
+   * @param o. Another movable PlaceHolderImpl<T>
+   * @return this PlaceHolderImpl<T>
+   */
+  PlaceHolderImpl<T>& operator=(PlaceHolderImpl<T>&& o)
+  {
+    value_ = std::move(o.value_);
+    return *this;
+  }
+
+  /**
+   * @brief ~PlaceHolderImpl. Default destructor.
+   */
   ~PlaceHolderImpl() = default;
 
+  /**
+   * @brief type
+   * @return std::type_info. typeid(T)
+   */
   inline const std::type_info& type() override { return typeid(T); }
 
 protected:
@@ -136,10 +219,15 @@ protected:
   friend const TT& anycast(const Any &val);
 };
 
+template <typename T>
+using PlaceHolderImplPtr = shared_ptr<PlaceHolderImpl<T>>;
+
+/**
+ * @brief The Any class.
+ * A type-erasure based holder.
+ */
 class Any
 {
-  using PlaceHolderPtr = shared_ptr<PlaceHolder>;
-
 public:
 
   /**
@@ -151,36 +239,42 @@ public:
   Any()  = default;
   ~Any() = default;
 
-  template<typename T>
-  Any(const T& value)
+  Any(const Any& o) = default;
+  Any(Any&& o);
+
+  Any& operator=(const Any& o) = default;
+  Any& operator=(Any&& o);
+
+  template<typename T,
+           typename = typename disable_if_same_or_derived<Any,T>::type>
+  Any(T&& value)
   {
-    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
+    placeholder_ =
+        make_ptr<PlaceHolderImpl<typename std::decay<T>::type>>(std::forward<T>(value));
   }
 
-  template<typename T>
-  void operator=(const T& value)
+  template<typename T,
+           typename = typename disable_if_same_or_derived<Any,T>::type>
+  void operator=(T&& value)
   {
-    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
+    placeholder_ =
+        make_ptr<PlaceHolderImpl<typename std::decay<T>::type>>(std::forward<T>(value));
   }
 
-  template<typename T>
-  Any(T& value)
-  {
-    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
-  }
-
-  template<typename T>
-  void operator=(T& value)
-  {
-    placeholder_ = make_ptr<PlaceHolderImpl<T>>(value);
-  }
-
-  const std::type_info& type() const
+  /**
+   * @brief type. Return the type info of the holded value, typeid(T).
+   * @return std::type_info.
+   */
+  inline const std::type_info& type() const
   {
     return placeholder_->type();
   }
 
-  bool empty()
+  /**
+   * @brief empty. Whether Any holds something or not.
+   * @return true if holding, false otherwise.
+   */
+  inline bool empty() const noexcept
   {
     return placeholder_.get() == nullptr;
   }
@@ -199,10 +293,14 @@ protected:
 template<typename T>
 T& anycast(Any& val)
 {
-  shared_ptr<PlaceHolderImpl<T>> concrete =
+  PlaceHolderImplPtr<T> concrete =
       dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (empty(concrete)) throw PropertyException("Not convertible.");
+  if (empty(concrete))
+    throw PropertyException(std::string("Could not convert from ") +
+                            details::name_of(val.type()) +
+                            std::string(" to ") +
+                            details::name_of(typeid(T)));
 
   return concrete->value_;
 }
@@ -210,10 +308,16 @@ T& anycast(Any& val)
 template<typename T>
 const T& anycast(const Any& val)
 {
-  shared_ptr<PlaceHolderImpl<T>> concrete =
+  PlaceHolderImplPtr<T> concrete =
       dynamic_pointer_cast<PlaceHolderImpl<T>>(val.placeholder_);
 
-  if (empty(concrete)) throw PropertyException("Not convertible.");
+  if (empty(concrete))
+  {
+    throw PropertyException(std::string("Could not convert from ") +
+                            details::name_of(val.type()) +
+                            std::string(" to ") +
+                            details::name_of(typeid(T)));
+  }
 
   return concrete->value_;
 }
@@ -240,14 +344,38 @@ public:
   };
 
   /**
-   * \brief Creates a Property that is initialized with the
+   * \brief Property default constructor.
+   * Creates a Property that is initialized with the
    * Property::none type. This should be fairly cheap.
    */
   Property();
   ~Property() = default;
 
+  /**
+   * @brief Property. Copy constructor.
+   * @param rhs, another Property.
+   */
   Property(const Property& rhs);
+
+  /**
+   * @brief Property. Move constructor.
+   * @param rhs, another Property.
+   */
+  Property(Property&& rhs);
+
+  /**
+   * @brief operator =
+   * @param rhs
+   * @return
+   */
   Property& operator=(const Property& rhs);
+
+  /**
+   * @brief operator =
+   * @param rhs
+   * @return
+   */
+  Property& operator=(Property&& rhs);
 
   /**
    * \brief A convenience constructor for creating a Property
@@ -256,12 +384,13 @@ public:
    * @param t default value for t
    * @param doc a documentation string
    */
-  template <typename T>
-  Property(const T& t, const std::string& doc = "") :
+  template <typename T,
+            typename = typename disable_if_same_or_derived<Property,T>::type>
+  Property(T&& t, const std::string& doc = "") :
     description_{doc},
     flags_()
   {
-    set_holder<T>(t);
+    set_holder(std::forward<T>(t));
 
     if (!std::is_same<T, none>::value)
       flags_[DEFAULT_VALUE]=true;
@@ -270,14 +399,18 @@ public:
   }
 
   /**
-   * \brief This is an unmangled type name for what ever Property is
-   * holding.
+   * \brief type_name. Type name of whatever Property is holding.
    *
-   * @return the unmangled name, e.g. "cv::Mat", or
-   * "pcl::PointCloud<pcl::PointXYZ>"
+   * @return std::string. A name equivalent to typeid(T).name
+   *
+   * @see type().
    */
-  const std::string& type_name() const noexcept;
+  std::string type_name() const noexcept;
 
+  /**
+   * @brief type. The type_info of whatever Property is holding.
+   * @return std::type_info.
+   */
   const std::type_info& type() const noexcept;
 
   inline bool is_defined()  const noexcept { return !flags_[NONE];           }
@@ -318,6 +451,7 @@ public:
   /// @todo is_castable or such
   bool is_compatible(const Property& rhs) const;
 
+  /// @todo is_castable or such
   template<typename T>
   bool is_compatible() const
   {
@@ -329,7 +463,7 @@ public:
    * @param val
    */
   template<typename T>
-  void set(const T& val)
+  void set(T&& val)
   {
     enforce_type_set<T>();
 
@@ -345,7 +479,7 @@ public:
       flags_[PROVIDED_VALUE] = true;
     }
 
-    set_holder<T>(std::forward<const T>(val));
+    set_holder(std::forward<T>(val));
   }
 
   template<typename T>
@@ -413,12 +547,10 @@ protected:
   }
 
   template <typename T>
-  void set_holder(const T& t = T())
+  void set_holder(T&& t)
   {
-    holder_ = t;
+    holder_ = std::forward<T>(t);
   }
-
-  void copy_holder(const Property& rhs);
 
   details::Any holder_;
 

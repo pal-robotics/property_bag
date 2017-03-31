@@ -14,3 +14,6 @@ target_link_libraries(gtest_property_bag ${PROJECT_NAME} ${Boost_LIBRARIES})
 
 catkin_add_gtest(gtest_property_bag_boost_serialization gtest_property_bag_boost_serialization.cpp)
 target_link_libraries(gtest_property_bag_boost_serialization ${PROJECT_NAME} ${Boost_LIBRARIES})
+
+catkin_add_gtest(gtest_property_bag_pair gtest_property_bag_pair.cpp)
+target_link_libraries(gtest_property_bag_pair ${PROJECT_NAME} ${Boost_LIBRARIES})

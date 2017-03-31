@@ -97,6 +97,44 @@ struct Dummy
     b_(b),
     s_{s} { }
 
+  Dummy(const Dummy& o):
+    a_(o.a_),
+    b_(o.b_),
+    s_(o.s_)
+  {
+    //std::cout << "Dummy copy constructor." << std::endl;
+  }
+
+  Dummy(Dummy&& o):
+    a_(std::move(o.a_)),
+    b_(std::move(o.b_)),
+    s_(std::move(o.s_))
+  {
+    //std::cout << "Dummy move constructor." << std::endl;
+  }
+
+  Dummy& operator =(const Dummy& o)
+  {
+    a_ = o.a_;
+    b_ = o.b_;
+    s_ = o.s_;
+
+    //std::cout << "Dummy copy assignment." << std::endl;
+
+    return *this;
+  }
+
+  Dummy& operator =(Dummy&& o)
+  {
+    a_ = std::move(o.a_);
+    b_ = std::move(o.b_);
+    s_ = std::move(o.s_);
+
+    //std::cout << "Dummy move assignment." << std::endl;
+
+    return *this;
+  }
+
   bool operator ==(const Dummy& d) const
   {
     return (a_ == d.a_) & (b_ == d.b_) & (s_ == d.s_);
