@@ -10,9 +10,24 @@ PropertyBag::PropertyBag(const PropertyBag& rhs) :
   //
 }
 
+PropertyBag::PropertyBag(PropertyBag&& rhs) :
+  default_handling_(rhs.default_handling_),
+  properties_(std::move(rhs.properties_))
+{
+  //
+}
+
 PropertyBag& PropertyBag::operator=(const PropertyBag& rhs)
 {
+  default_handling_ = rhs.default_handling_;
   this->properties_ = rhs.properties_;
+  return *this;
+}
+
+PropertyBag& PropertyBag::operator=(PropertyBag&& rhs)
+{
+  default_handling_ = rhs.default_handling_;
+  this->properties_ = std::move(rhs.properties_);
   return *this;
 }
 
