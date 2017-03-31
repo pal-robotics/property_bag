@@ -69,6 +69,9 @@ class PropertyBag
 
 public:
 
+  using iterator = PropertyMap::iterator;
+  using const_iterator = PropertyMap::const_iterator;
+
   /**
    * @brief 'pimpl' struct to enable access to
    * private members during serialization
@@ -227,6 +230,12 @@ public:
 
   inline RetrievalHandling getRetrievalHandling() const noexcept
   { return default_handling_; }
+
+  iterator begin();
+  const_iterator begin() const;
+
+  iterator end();
+  const_iterator end() const;
 
 private:
 

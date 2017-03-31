@@ -72,4 +72,24 @@ bool PropertyBag::exists(const std::string& name) const
   return properties_.find(name) != properties_.end();
 }
 
+PropertyBag::iterator PropertyBag::begin()
+{
+  return properties_.begin();
+}
+
+PropertyBag::const_iterator PropertyBag::begin() const
+{
+  return properties_.begin();
+}
+
+PropertyBag::iterator PropertyBag::end()
+{
+  return properties_.end();
+}
+
+PropertyBag::const_iterator PropertyBag::end() const
+{
+  return properties_.end();
+}
+
 } // namespace property_bag
