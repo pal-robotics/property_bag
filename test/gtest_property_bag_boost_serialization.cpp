@@ -3,13 +3,7 @@
 #include "property_bag/serialization/property_bag_boost_serialization.h"
 #include "property_bag/serialization/eigen_boost_serialization.h"
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
 EXPORT_PROPERTY_NAMED_TYPE(test::Dummy, test__Dummy);
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Vector3d, eigen_vector3)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::VectorXd, eigen_vectorxd)
-EXPORT_PROPERTY_NAMED_TYPE(Eigen::Quaterniond, eigen_quaterniond)
 
 TEST(PropertySerializationTest, PropertyBagSerialization)
 {

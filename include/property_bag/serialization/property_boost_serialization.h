@@ -8,13 +8,22 @@
 #ifndef PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
 #define PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
 
-#include <property_bag/property.h>
-
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/bitset.hpp>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+//#include <boost/archive/xml_oarchive.hpp>
+//#include <boost/archive/xml_iarchive.hpp>
+
+//#include <boost/archive/binary_oarchive.hpp>
+//#include <boost/archive/binary_iarchive.hpp>
+
 #include <boost/serialization/export.hpp>
+
+#include <property_bag/property.h>
 
 #define EXPORT_PROPERTY_NAMED_TYPE(Type, Name) \
   BOOST_CLASS_EXPORT_GUID(property_bag::details::PlaceHolderImpl<Type>, \
@@ -115,11 +124,13 @@ void serialize(
 } //namespace serialization
 } //namespace boost
 
+/*
 EXPORT_PROPERTY_NAMED_TYPE(bool, bool)
 EXPORT_PROPERTY_NAMED_TYPE(int, int)
 EXPORT_PROPERTY_NAMED_TYPE(float, float)
 EXPORT_PROPERTY_NAMED_TYPE(double, double)
 EXPORT_PROPERTY_NAMED_TYPE(std::string, std__string)
+*/
 /*
 EXPORT_PROPERTY_NAMED_TYPE(std::vector<bool>, std__vector_bool)
 EXPORT_PROPERTY_NAMED_TYPE(std::vector<int>, std__vector_int)
@@ -127,11 +138,5 @@ EXPORT_PROPERTY_NAMED_TYPE(std::vector<float>, std__vector_float)
 EXPORT_PROPERTY_NAMED_TYPE(std::vector<double>, std__vector_double)
 EXPORT_PROPERTY_NAMED_TYPE(std::vector<std::string>, std__vector_std__string)
 */
-
-//#include <property_bag/eigen_boost_serialization.h>
-// Specific boost specializations for Eigen
-//EXPORT_PROPERTY_NAMED_TYPE(Eigen::Vector3d, eigen_vector3)
-//EXPORT_PROPERTY_NAMED_TYPE(Eigen::VectorXd, eigen_vectorxd)
-//EXPORT_PROPERTY_NAMED_TYPE(Eigen::Quaterniond, eigen_quaterniond)
 
 #endif /* PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H */
