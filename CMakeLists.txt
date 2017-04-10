@@ -61,7 +61,6 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/property.cpp
-  src/property_bag.cpp
   src/serialization/boost_serialization_registry.cpp #<- at last
   src/serialization/eigen_boost_serialization_registry.cpp #<- at last
 )

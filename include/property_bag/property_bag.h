@@ -21,19 +21,21 @@ std::integral_constant<bool,
   std::is_same<typename std::decay<T>::type, char*>::value ||
   std::is_same<typename std::decay<T>::type, const char*>::value>;
 
-#define ASSERT_NAMED_PROPERTIES(NAME, ARGS) \
-  static_assert(is_string<NAME>::value, \
-    "Error PropertyBag::setValue :\nparameter name must be a string."); \
-  static_assert(sizeof...(Args)%2==0, \
-  "Error PropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
+#define ASSERT_NAMED_PROPERTIES(KEY_TYPE, NAME, ARGS) \
+static_assert(sizeof...(Args)%2==0, \
+"Error AbstractPropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
 
-#define ASSERT_NAMED_DOCED_PROPERTIES(NAME, DOC, ARGS) \
-  static_assert(is_string<NAME>::value, \
-    "Error PropertyBag::setValue :\nparameter name must be a string."); \
+//  static_assert(std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value,
+//    "Error AbstractPropertyBag::setValue :\nparameter name must be a string.");
+
+#define ASSERT_NAMED_DOCED_PROPERTIES(KEY_TYPE, NAME, DOC, ARGS) \
   static_assert(is_string<DOC>::value, \
-    "Error PropertyBag::setValue :\nparameter description must be a string."); \
+    "Error AbstractPropertyBag::setValue :\nparameter description must be a string."); \
   static_assert(sizeof...(ARGS)%3==0, \
-    "Error PropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
+    "Error AbstractPropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
+
+//  static_assert(std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value,
+//    "Error AbstractPropertyBag::setValue :\nparameter name must be a string.");
 
 template<class...> struct disjunction : std::false_type { };
 template<class B1> struct disjunction<B1> : B1 { };
@@ -63,14 +65,15 @@ enum class RetrievalHandling : std::size_t
   THROW
 };
 
-class PropertyBag
+template <typename KeyType = std::string>
+class AbstractPropertyBag
 {
-  using PropertyMap = std::map<std::string, Property>;
+  using PropertyMap = std::map<KeyType, Property>;
 
 public:
 
-  using iterator = PropertyMap::iterator;
-  using const_iterator = PropertyMap::const_iterator;
+  using iterator = typename PropertyMap::iterator;
+  using const_iterator = typename PropertyMap::const_iterator;
 
   /**
    * @brief 'pimpl' struct to enable access to
@@ -80,19 +83,19 @@ public:
 
   struct WithDoc {};
 
-  PropertyBag()          = default;
-  virtual ~PropertyBag() = default;
+  AbstractPropertyBag()          = default;
+  virtual ~AbstractPropertyBag() = default;
 
-  PropertyBag(const PropertyBag& rhs);
-  PropertyBag(PropertyBag&& rhs);
+  AbstractPropertyBag(const AbstractPropertyBag& rhs);
+  AbstractPropertyBag(AbstractPropertyBag&& rhs);
 
-  PropertyBag& operator=(const PropertyBag& rhs);
-  PropertyBag& operator=(PropertyBag&& rhs);
+  AbstractPropertyBag& operator=(const AbstractPropertyBag& rhs);
+  AbstractPropertyBag& operator=(AbstractPropertyBag&& rhs);
 
-  bool operator==(const PropertyBag& rhs);
+  bool operator==(const AbstractPropertyBag& rhs);
 
   template <typename T>
-  bool addProperty(const std::string &name, T&& value, const std::string& doc = "")
+  bool addProperty(const KeyType &name, T&& value, const std::string& doc = "")
   {
     auto it = properties_.find(name);
 
@@ -107,7 +110,7 @@ public:
   template <typename Name, typename T, typename Doc, typename... Args>
   void addPropertiesWithDoc(Name&& name, T&& value, Doc&& description, Args&&... args)
   {
-    ASSERT_NAMED_DOCED_PROPERTIES(Name, Doc, Args);
+    ASSERT_NAMED_DOCED_PROPERTIES(KeyType, Name, Doc, Args);
 
     addProperty(std::forward<Name>(name), std::forward<T>(value),
                 std::forward<Doc>(description));
@@ -118,15 +121,15 @@ public:
   template <typename Name, typename T, typename... Args>
   void addProperties(Name&& name, T&& value, Args&&... args)
   {
-    ASSERT_NAMED_PROPERTIES(Name, Args);
+    ASSERT_NAMED_PROPERTIES(KeyType, Name, Args);
 
     addProperty(std::forward<Name>(name), std::forward<T>(value));
     addProperties(std::forward<Args>(args)...);
   }
 
   template <typename... Args, typename =
-            typename enable_if_none_is_same_as<PropertyBag, Args...>::type>
-  PropertyBag(Args&&... args) /*:
+            typename enable_if_none_is_same_as<AbstractPropertyBag, Args...>::type>
+  AbstractPropertyBag(Args&&... args) /*:
                                 // figure-out unrolling in map
                                 // Should be something along the line
                                 // build 2 indexes sequences : odd & pair
@@ -137,18 +140,18 @@ public:
   }
 
   template <typename... Args, typename =
-            typename enable_if_none_is_same_as<PropertyBag, Args...>::type>
-  PropertyBag(const WithDoc /*withdoc*/, Args&&... args)
+            typename enable_if_none_is_same_as<AbstractPropertyBag, Args...>::type>
+  AbstractPropertyBag(const WithDoc /*withdoc*/, Args&&... args)
   {
     addPropertiesWithDoc(std::forward<Args>(args)...);
   }
 
-  Property& getProperty(const std::string &name);
+  Property& getProperty(const KeyType &name);
 
-  const Property& getProperty(const std::string &name) const;
+  const Property& getProperty(const KeyType &name) const;
 
   template <typename T>
-  bool getPropertyValue(const std::string &name, T& value,
+  bool getPropertyValue(const KeyType &name, T& value,
                         const RetrievalHandling handling) const
   {
     auto it = properties_.find(name);
@@ -156,7 +159,7 @@ public:
     if (it != properties_.end()){
       if (handling == RetrievalHandling::QUIET){
         try{
-          value = it->second.get<T>();
+          value = it->second.template get<T>();
         }
         catch (PropertyException& e){
           //std::cerr << "While retrieving property "
@@ -165,7 +168,7 @@ public:
         }
       }
       else{
-        value = it->second.get<T>();
+        value = it->second.template get<T>();
       }
     }
     else{
@@ -187,13 +190,13 @@ public:
   }
 
   template <typename T>
-  bool getPropertyValue(const std::string &name, T& value) const
+  bool getPropertyValue(const KeyType &name, T& value) const
   {
     return getPropertyValue(name, value, default_handling_);
   }
 
   template <typename T>
-  bool getPropertyValue(const std::string &name, T& value,
+  bool getPropertyValue(const KeyType &name, T& value,
                         T&& default_value) const
   {
     bool got = getPropertyValue(name, value, RetrievalHandling::QUIET);
@@ -204,23 +207,23 @@ public:
   }
 
   template <typename T>
-  bool updateProperty(const std::string &name, T&& value)
+  bool updateProperty(const KeyType &name, T&& value)
   {
     auto it = properties_.find(name);
 
     if (it != properties_.end())
-      /*value = */it->second.set<T>(std::forward<T>(value));
+      /*value = */it->second.template set<T>(std::forward<T>(value));
     else
       return false;
 
     return true;
   }
 
-  bool removeProperty(const std::string &name);
+  bool removeProperty(const KeyType &name);
 
-  std::list<std::string> listProperties() const;
+  std::list<KeyType> listProperties() const;
 
-  bool exists(const std::string& name) const;
+  bool exists(const KeyType& name) const;
 
   inline size_t size()  const noexcept { return properties_.size(); }
   inline size_t empty() const noexcept { return properties_.empty(); }
@@ -249,7 +252,9 @@ private:
 
   void addPropertiesWithDoc();
 };
+using PropertyBag = AbstractPropertyBag<std::string>;
 
 } //namespace property_bag
 
+#include <property_bag/property_bag.hpp>
 #endif //PROPERTY_BAG_PROPERTY_BAG_H
