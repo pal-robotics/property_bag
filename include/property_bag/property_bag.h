@@ -19,23 +19,24 @@ template <typename T>
 using is_string =
 std::integral_constant<bool,
   std::is_same<typename std::decay<T>::type, char*>::value ||
-  std::is_same<typename std::decay<T>::type, const char*>::value>;
+  std::is_same<typename std::decay<T>::type, const char*>::value ||
+  std::is_same<typename std::decay<T>::type, std::string>::value>;
 
 #define ASSERT_NAMED_PROPERTIES(KEY_TYPE, NAME, ARGS) \
-static_assert(sizeof...(Args)%2==0, \
-"Error AbstractPropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
-
-//  static_assert(std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value,
-//    "Error AbstractPropertyBag::setValue :\nparameter name must be a string.");
+  static_assert(sizeof...(Args)%2==0, \
+    "Error : parameters work by pair, a name (std::string) and a value."); \
+  static_assert(((is_string<KEY_TYPE>::value and is_string<NAME>::value) or \
+                 std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value), \
+    "Error : KeyType and provided key's type are not the same."); \
 
 #define ASSERT_NAMED_DOCED_PROPERTIES(KEY_TYPE, NAME, DOC, ARGS) \
   static_assert(is_string<DOC>::value, \
-    "Error AbstractPropertyBag::setValue :\nparameter description must be a string."); \
+    "Error : parameter description must be a string."); \
   static_assert(sizeof...(ARGS)%3==0, \
-    "Error AbstractPropertyBag::setValue :\nparameters work by pair, a name (std::string) and a value."); \
-
-//  static_assert(std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value,
-//    "Error AbstractPropertyBag::setValue :\nparameter name must be a string.");
+    "Error : parameters work by pair, a name KeyType and a value."); \
+    static_assert(((is_string<KEY_TYPE>::value and is_string<NAME>::value) or \
+                   std::is_same<KEY_TYPE, typename std::decay<NAME>::type >::value), \
+    "Error : KeyType and provided key's type are not the same."); \
 
 template<class...> struct disjunction : std::false_type { };
 template<class B1> struct disjunction<B1> : B1 { };
