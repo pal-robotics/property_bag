@@ -2,6 +2,14 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'package-format-2' into 'dubnium-devel'
+  Update to package format 2 and reorganize dependencies
+  See merge request !6
+* Update to package format 2 and reorganize dependencies
+* Contributors: Victor Lopez
+
 0.0.2 (2017-07-24)
 ------------------
 * Merge branch 'template-key-type' into 'dubnium-devel'
