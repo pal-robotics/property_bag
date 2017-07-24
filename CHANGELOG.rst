@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2017-07-24)
+------------------
 * Merge branch 'template-key-type' into 'dubnium-devel'
   Make key type of property bag a template
   See merge request !5
