@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2017-07-24)
+------------------
 * Merge branch 'package-format-2' into 'dubnium-devel'
   Update to package format 2 and reorganize dependencies
   See merge request !6
