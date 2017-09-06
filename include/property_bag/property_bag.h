@@ -66,6 +66,19 @@ enum class RetrievalHandling : std::size_t
   THROW
 };
 
+inline std::ostream& operator <<(std::ostream& s, const RetrievalHandling r)
+{
+  switch (r) {
+  case RetrievalHandling::QUIET:
+    s << "QUIET";
+    break;
+  case RetrievalHandling::THROW:
+    s << "THROW";
+    break;
+  }
+  return s;
+}
+
 template <typename KeyType = std::string>
 class AbstractPropertyBag
 {
