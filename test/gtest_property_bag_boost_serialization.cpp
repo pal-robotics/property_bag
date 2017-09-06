@@ -15,6 +15,9 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     property_bag::PropertyBag bag;
 
+    // non-default value
+    bag.setRetrievalHandling(property_bag::RetrievalHandling::THROW);
+
     Eigen::Vector3d eigen_vector(1., 2., 3.);
 
     bag.addPropertiesWithDoc("my_bool", true, "my_bool_doc",
@@ -42,6 +45,8 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     ASSERT_FALSE(bag.empty());
     ASSERT_EQ(bag.size(), 4);
+
+    ASSERT_EQ(bag.getRetrievalHandling(), property_bag::RetrievalHandling::THROW);
 
     ASSERT_TRUE(bag.exists("my_bool"));
     ASSERT_TRUE(bag.exists("my_int"));
