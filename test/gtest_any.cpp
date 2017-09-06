@@ -16,7 +16,7 @@ TEST(AnyTest, AnyBool)
 
   bool retrieved_bool = false;
 
-  retrieved_bool = property_bag::details::anycast<bool>(any_bool);
+  ASSERT_NO_THROW(retrieved_bool = property_bag::details::anycast<bool>(any_bool));
 
   ASSERT_EQ(retrieved_bool, true);
 
@@ -37,7 +37,7 @@ TEST(AnyTest, AnyInt)
 
   int retrieved_int = 55;
 
-  retrieved_int = property_bag::details::anycast<int>(any);
+  ASSERT_NO_THROW(retrieved_int = property_bag::details::anycast<int>(any));
 
   ASSERT_EQ(retrieved_int, 5);
 
@@ -58,11 +58,58 @@ TEST(AnyTest, AnyDummy)
 
   test::Dummy retrieved_dummy(55, 55.5, "fifty-five");
 
-  retrieved_dummy = property_bag::details::anycast<test::Dummy>(any);
+  ASSERT_NO_THROW(retrieved_dummy = property_bag::details::anycast<test::Dummy>(any));
 
   ASSERT_EQ(retrieved_dummy, test::Dummy());
 
   PRINTF("All good at AnyTest::AnyDummy !\n");
+}
+
+TEST(AnyTest, AnyThrow)
+{
+  property_bag::details::Any any_bool = true;
+
+  ASSERT_THROW(int i = property_bag::details::anycast<int>(any_bool); UNUSED(i);,
+               property_bag::PropertyException);
+
+  ASSERT_THROW(const int ic = property_bag::details::anycast<int>(any_bool); UNUSED(ic);,
+               property_bag::PropertyException);
+
+  PRINTF("All good at AnyTest::AnyThrow !\n");
+}
+
+TEST(AnyTest, AnyAssignement)
+{
+  property_bag::details::Any any = true;
+  property_bag::details::Any any_bool = false;
+
+  any = any_bool;
+
+  bool retrieved_bool = true;
+
+  ASSERT_NO_THROW(retrieved_bool = property_bag::details::anycast<bool>(any));
+
+  ASSERT_FALSE(retrieved_bool);
+
+  property_bag::details::Any any_int = 5;
+
+  any = any_int;
+
+  int retrieved_int = 0;
+
+  ASSERT_NO_THROW(retrieved_int = property_bag::details::anycast<int>(any));
+
+  ASSERT_EQ(retrieved_int, 5);
+
+  any = std::string("test");
+
+  std::string retrieved_str;
+
+  ASSERT_NO_THROW(retrieved_str = property_bag::details::anycast<std::string>(any));
+
+  ASSERT_EQ(retrieved_str, "test");
+
+  PRINTF("All good at AnyTest::AnyAssignement !\n");
 }
 
 int main(int argc, char **argv)

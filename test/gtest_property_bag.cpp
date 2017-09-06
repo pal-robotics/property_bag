@@ -2,6 +2,24 @@
 #include <Eigen/Dense>
 #include <property_bag/property_bag.h>
 
+TEST(PropertyBagTest, PropertyBagRetrievalHandlingStream)
+{
+  std::stringstream ss;
+
+  ss << property_bag::RetrievalHandling::QUIET;
+
+  ASSERT_EQ(ss.str(), "QUIET");
+
+  ss.str("");
+
+  ss << property_bag::RetrievalHandling::THROW;
+
+  ASSERT_EQ(ss.str(), "THROW");
+
+  PRINTF("All good at "
+   "PropertyBagTest::PropertyBagRetrievalHandlingStream !\n");
+}
+
 TEST(PropertyBagTest, PropertyBagName)
 {
   property_bag::PropertyBag named_bag;
@@ -54,6 +72,20 @@ TEST(PropertyBagTest, PropertyBag)
   ASSERT_EQ(list_properties, (std::list<std::string>{"my_bool", "my_int", "my_string", "my_vector"}));
 
   PRINTF("All good at PropertyBagTest::PropertyBag !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagExistingProperty)
+{
+  property_bag::PropertyBag bag{"my_bool", true};
+
+  ASSERT_FALSE(bag.addProperty("my_bool", false));
+
+  bool my_bool(false);
+  ASSERT_TRUE(bag.getPropertyValue("my_bool", my_bool));
+
+  ASSERT_TRUE(my_bool);
+
+  PRINTF("All good at PropertyBagTest::PropertyBagExistingProperty !\n");
 }
 
 TEST(PropertyBagTest, PropertyBagDefaultValue)
