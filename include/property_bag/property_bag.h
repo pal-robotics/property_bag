@@ -84,6 +84,8 @@ class AbstractPropertyBag
 {
   using PropertyMap = std::map<KeyType, Property>;
 
+  struct WithDocHelper {};
+
 public:
 
   using iterator = typename PropertyMap::iterator;
@@ -95,7 +97,7 @@ public:
    */
   struct serialization_accessor;
 
-  struct WithDoc {};
+  static constexpr WithDocHelper WithDoc = {};
 
   AbstractPropertyBag()          = default;
   virtual ~AbstractPropertyBag() = default;
@@ -155,7 +157,7 @@ public:
 
   template <typename... Args, typename =
             typename enable_if_none_is_same_as<AbstractPropertyBag, Args...>::type>
-  AbstractPropertyBag(const WithDoc /*withdoc*/, Args&&... args)
+  AbstractPropertyBag(const WithDocHelper /*withdoc*/, Args&&... args)
   {
     addPropertiesWithDoc(std::forward<Args>(args)...);
   }
