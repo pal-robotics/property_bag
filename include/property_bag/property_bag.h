@@ -296,7 +296,12 @@ public:
   iterator end();
   const_iterator end() const;
 
+  inline void name(const KeyType& bag_name) { name_ = bag_name; }
+  inline const KeyType& name() { return name_; }
+
 private:
+
+  KeyType name_;
 
   Property none_;
 
@@ -308,6 +313,7 @@ private:
 
   void addPropertiesWithDoc();
 };
+
 using PropertyBag = AbstractPropertyBag<std::string>;
 
 } //namespace property_bag
