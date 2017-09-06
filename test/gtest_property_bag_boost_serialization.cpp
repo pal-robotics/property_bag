@@ -15,6 +15,8 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     property_bag::PropertyBag bag;
 
+    bag.name("test");
+
     // non-default value
     bag.setRetrievalHandling(property_bag::RetrievalHandling::THROW);
 
@@ -45,6 +47,8 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     ASSERT_FALSE(bag.empty());
     ASSERT_EQ(bag.size(), 4);
+
+    ASSERT_EQ(bag.name(), "test");
 
     ASSERT_EQ(bag.getRetrievalHandling(), property_bag::RetrievalHandling::THROW);
 
