@@ -172,36 +172,50 @@ public:
   {
     auto it = properties_.find(name);
 
-    if (it != properties_.end()){
-      if (handling == RetrievalHandling::QUIET){
-        try{
-          value = it->second.template get<T>();
-        }
-        catch (PropertyException& e){
-          //std::cerr << "While retrieving property "
-          //          << name << " got " << e.what() << std::endl;
-          return false;
-        }
-      }
-      else{
+    if (it != properties_.end())
+    {
+      try
+      {
         value = it->second.template get<T>();
       }
-    }
-    else{
-      if (handling == RetrievalHandling::THROW){
-        std::stringstream ss;
-        ss << "Variable '" << name
-           << "' not found in property bag."
-           << "\nAvailable variables:";
-        auto variales = listProperties();
-        for (auto it = variales.begin(); it != variales.end(); ++it){
-          ss << "\n\t" << *it << std::endl;
+      catch (const PropertyException& e)
+      {
+        switch (handling) {
+        case RetrievalHandling::QUIET:
+        {
+          return false;
         }
+        case RetrievalHandling::THROW:
+        {
+          std::stringstream ss;
+          ss << "named '" << name << "':\n";
+          ss << e.what();
+          throw PropertyException(ss.str());
+          break;
+        }
+        }
+      }
+    } else {
+
+      switch (handling) {
+      case RetrievalHandling::QUIET:
+      {
+        return false;
+      }
+      case RetrievalHandling::THROW:
+      {
+        std::stringstream ss;
+        ss << "named '" << name
+           << "' not found in property bag."
+           << "\nAvailable properties:";
+
+        for (const auto& n : listProperties())
+          ss << "\n\t" << n << std::endl;
+
         throw PropertyException(ss.str());
       }
-      return false;
+      }
     }
-
     return true;
   }
 
@@ -228,7 +242,29 @@ public:
     auto it = properties_.find(name);
 
     if (it != properties_.end())
-      /*value = */it->second.template set<T>(std::forward<T>(value));
+    {
+      try
+      {
+        it->second.template set<T>(std::forward<T>(value));
+      }
+      catch (const PropertyException& e)
+      {
+        switch (default_handling_) {
+        case RetrievalHandling::QUIET:
+        {
+          return false;
+        }
+        case RetrievalHandling::THROW:
+        {
+          std::stringstream ss;
+          ss << "Property '" << name << "':\n";
+          ss << e.what();
+          throw PropertyException(ss.str());
+          break;
+        }
+        }
+      }
+    }
     else
       return false;
 
