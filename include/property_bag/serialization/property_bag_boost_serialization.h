@@ -24,6 +24,7 @@ struct AbstractPropertyBag<KeyType>::serialization_accessor
       AbstractPropertyBag &property_bag,
       const unsigned int /*file_version*/)
   {
+    ar & BOOST_SERIALIZATION_NVP(property_bag.default_handling_);
     ar & BOOST_SERIALIZATION_NVP(property_bag.properties_);
   }
 };
