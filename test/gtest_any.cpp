@@ -2,6 +2,29 @@
 
 #include "property_bag/property.h"
 
+TEST(StuffTest, Stuff)
+{
+  property_bag::shared_ptr<bool> dummy_ptr;
+  ASSERT_TRUE(property_bag::empty(dummy_ptr));
+
+  dummy_ptr = property_bag::make_ptr<bool>(true);
+  ASSERT_FALSE(property_bag::empty(dummy_ptr));
+
+  struct A { virtual ~A() = default;};
+  struct B : A {};
+
+  property_bag::shared_ptr<A> a_ptr = property_bag::make_ptr<B>();
+
+  ASSERT_FALSE(property_bag::empty(property_bag::dynamic_pointer_cast<B>(a_ptr)));
+
+  property_bag::PropertyException exception("test");
+
+  ASSERT_EQ(exception.message_, "test");
+  ASSERT_EQ(std::string(exception.what()), "Property : test\n");
+
+  PRINTF("All good at StuffTest::Stuff !\n");
+}
+
 TEST(AnyTest, AnyBool)
 {
   property_bag::details::Any any_bool;
@@ -69,10 +92,12 @@ TEST(AnyTest, AnyThrow)
 {
   property_bag::details::Any any_bool = true;
 
-  ASSERT_THROW(int i = property_bag::details::anycast<int>(any_bool); UNUSED(i);,
+  ASSERT_THROW(property_bag::details::anycast<int>(any_bool);,
                property_bag::PropertyException);
 
-  ASSERT_THROW(const int ic = property_bag::details::anycast<int>(any_bool); UNUSED(ic);,
+  const property_bag::details::Any const_any_bool = true;
+
+  ASSERT_THROW(property_bag::details::anycast<int>(const_any_bool);,
                property_bag::PropertyException);
 
   PRINTF("All good at AnyTest::AnyThrow !\n");
