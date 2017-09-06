@@ -2,6 +2,19 @@
 #include <Eigen/Dense>
 #include <property_bag/property_bag.h>
 
+TEST(PropertyBagTest, PropertyBagName)
+{
+  property_bag::PropertyBag named_bag;
+
+  ASSERT_EQ(named_bag.name(), "");
+
+  named_bag.name("test");
+
+  ASSERT_EQ(named_bag.name(), "test");
+
+  PRINTF("All good at PropertyBagTest::PropertyBagName !\n");
+}
+
 TEST(PropertyBagTest, PropertyBag)
 {
   Eigen::Vector3d eigen_vector(1., 2., 3.);
