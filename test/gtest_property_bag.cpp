@@ -215,7 +215,7 @@ TEST(PropertyBagTest, PropertyBagAddWithDoc)
 
 TEST(PropertyBagTest, PropertyBagConstructorDoc)
 {
-  property_bag::PropertyBag bag{property_bag::PropertyBag::WithDoc{},
+  property_bag::PropertyBag bag{property_bag::PropertyBag::WithDoc,
                                 "my_bool", true, "my_bool_doc",
                                 "my_int", 5, "my_int_doc",
                                 "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"};
@@ -239,7 +239,7 @@ TEST(PropertyBagTest, PropertyBagConstructorDoc)
 TEST(PropertyBagTest, PropertyPropertyBag)
 {
   property_bag::Property property{
-    property_bag::PropertyBag{property_bag::PropertyBag::WithDoc{},
+    property_bag::PropertyBag{property_bag::PropertyBag::WithDoc,
                               "my_bool", true, "my_bool_doc",
                               "my_int", 5, "my_int_doc",
                               "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"},
