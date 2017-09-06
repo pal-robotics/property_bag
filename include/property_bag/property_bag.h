@@ -225,13 +225,17 @@ public:
     return getPropertyValue(name, value, default_handling_);
   }
 
-  template <typename T>
+  template <typename T, typename TT>
   bool getPropertyValue(const KeyType &name, T& value,
-                        T&& default_value) const
+                        TT&& default_value) const
   {
+    static_assert(std::is_convertible<TT,T>::value,
+                  "'default_value' type isn't convertible to "
+                  "'value' type in 'value' assignation.");
+
     bool got = getPropertyValue(name, value, RetrievalHandling::QUIET);
 
-    if (!got) value = std::forward<T>(default_value);
+    if (!got) value = std::forward<TT>(default_value);
 
     return got;
   }
