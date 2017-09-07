@@ -106,7 +106,9 @@ TEST(AnyTest, AnyThrow)
 TEST(AnyTest, AnyAssignement)
 {
   property_bag::details::Any any = true;
-  property_bag::details::Any any_bool = false;
+  property_bag::details::Any any_bool = true;
+
+  any_bool = false;
 
   any = any_bool;
 
@@ -116,7 +118,7 @@ TEST(AnyTest, AnyAssignement)
 
   ASSERT_FALSE(retrieved_bool);
 
-  property_bag::details::Any any_int = 5;
+  const property_bag::details::Any any_int = 5;
 
   any = any_int;
 
@@ -133,6 +135,26 @@ TEST(AnyTest, AnyAssignement)
   ASSERT_NO_THROW(retrieved_str = property_bag::details::anycast<std::string>(any));
 
   ASSERT_EQ(retrieved_str, "test");
+
+  const property_bag::details::Any any_bool2 = true;
+
+  ASSERT_FALSE(any_bool2.empty());
+
+  any = any_bool2;
+
+  ASSERT_NO_THROW(retrieved_bool = property_bag::details::anycast<bool>(any));
+
+  ASSERT_TRUE(retrieved_bool);
+
+  property_bag::details::Any any_bool3 = false;
+
+  ASSERT_FALSE(any_bool3.empty());
+
+  any = std::move(any_bool3);
+
+  ASSERT_NO_THROW(retrieved_bool = property_bag::details::anycast<bool>(any));
+
+  ASSERT_FALSE(retrieved_bool);
 
   PRINTF("All good at AnyTest::AnyAssignement !\n");
 }

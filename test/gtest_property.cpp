@@ -170,6 +170,8 @@ TEST(PropertyTest, PropertyMoveConstructor)
   ASSERT_FALSE(property_bool.is_compatible(property_int));
 
   ASSERT_NO_THROW(property_bool = property_int);
+
+  PRINTF("All good at PropertyTest::PropertyMoveConstructor !\n");
 }
 
 TEST(PropertyTest, PropertyCopyConstructor)
@@ -211,6 +213,8 @@ TEST(PropertyTest, PropertyCopyConstructor)
   ASSERT_FALSE(property_bool.is_compatible(property_int));
 
   ASSERT_NO_THROW(property_bool = property_int);
+
+  PRINTF("All good at PropertyTest::PropertyCopyConstructor !\n");
 }
 
 TEST(PropertyTest, PropertyAssignement)
@@ -254,6 +258,17 @@ TEST(PropertyTest, PropertyAssignement)
   ASSERT_FALSE(property_bool.is_compatible(property_int));
 
   ASSERT_NO_THROW(property_bool = property_int);
+
+  ASSERT_TRUE(property_bool.is_same(property_int));
+  ASSERT_TRUE(property_bool.is_compatible(property_int));
+
+  ASSERT_EQ(property_bool.get<int>(), 1);
+
+  ASSERT_NO_THROW(property_bool = property_bag::Property(true, "another_bool"));
+
+  ASSERT_TRUE(property_bool.get<bool>());
+
+  PRINTF("All good at PropertyTest::PropertyAssignement !\n");
 }
 
 int main(int argc, char **argv)

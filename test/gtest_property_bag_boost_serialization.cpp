@@ -24,6 +24,7 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     bag.addPropertiesWithDoc("my_bool", true, "my_bool_doc",
                              "my_int", 5, "my_int_doc",
+                             "my_string", std::string("this is a string"), "my_string_doc",
                              "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc");
     bag.addProperty("eigen_vector", eigen_vector);
 
@@ -46,7 +47,7 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
     ASSERT_NO_THROW(ia >> bag);
 
     ASSERT_FALSE(bag.empty());
-    ASSERT_EQ(bag.size(), 4);
+    ASSERT_EQ(bag.size(), 5);
 
     ASSERT_EQ(bag.name(), "test");
 
@@ -54,19 +55,23 @@ TEST(PropertySerializationTest, PropertyBagSerialization)
 
     ASSERT_TRUE(bag.exists("my_bool"));
     ASSERT_TRUE(bag.exists("my_int"));
+    ASSERT_TRUE(bag.exists("my_string"));
     ASSERT_TRUE(bag.exists("my_dummy"));
 
     const auto& prop_bool  = bag.getProperty("my_bool");
     const auto& prop_int   = bag.getProperty("my_int");
+    const auto& prop_str   = bag.getProperty("my_string");
     const auto& prop_dummy = bag.getProperty("my_dummy");
 
     ASSERT_TRUE(prop_bool.get<bool>());
 
     ASSERT_EQ(prop_int.get<int>(), 5);
+    ASSERT_EQ(prop_str.get<std::string>(), "this is a string");
     ASSERT_EQ(prop_dummy.get<test::Dummy>(), test::Dummy(2, 6.28, "ok"));
 
     ASSERT_EQ(prop_bool.description(),  "my_bool_doc");
     ASSERT_EQ(prop_int.description(),   "my_int_doc");
+    ASSERT_EQ(prop_str.description(),   "my_string_doc");
     ASSERT_EQ(prop_dummy.description(), "my_dummy_doc");
   }
 

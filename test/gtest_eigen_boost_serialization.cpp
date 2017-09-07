@@ -44,6 +44,45 @@ TEST(EigenSerializationTest, EigenMatrixBoostSerialization)
   PRINTF("All good at EigenSerializationTest::EigenMatrixBoostSerialization !\n");
 }
 
+TEST(EigenSerializationTest, EigenDynamicVectorBoostSerialization)
+{
+  std::stringstream ss;
+
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mat_double = Eigen::Matrix<double, Eigen::Dynamic, 1>::Random(10, 1);
+  Eigen::Matrix<float, Eigen::Dynamic, 1> mat_float   = Eigen::Matrix<float, Eigen::Dynamic, 1>::Random(10, 1);
+  Eigen::Matrix<int, Eigen::Dynamic, 1> mat_int       = Eigen::Matrix<int, Eigen::Dynamic, 1>::Random(10, 1);
+
+  {
+    boost::archive::text_oarchive oa(ss);
+
+    ASSERT_NO_THROW(oa << mat_double);
+
+    ASSERT_NO_THROW(oa << mat_float);
+
+    ASSERT_NO_THROW(oa << mat_int);
+  }
+
+  PRINTF("EigenSerializationTest::EigenDynamicVectorBoostSerialization Saved !\n");
+
+  {
+    boost::archive::text_iarchive ia(ss);
+
+    Eigen::Matrix<double, Eigen::Dynamic, 1> mat_double_loaded;
+    ASSERT_NO_THROW(ia >> mat_double_loaded);
+    ASSERT_EQ(mat_double, mat_double_loaded);
+
+    Eigen::Matrix<float, Eigen::Dynamic, 1> mat_float_loaded;
+    ASSERT_NO_THROW(ia >> mat_float_loaded);
+    ASSERT_EQ(mat_float, mat_float_loaded);
+
+    Eigen::Matrix<int, Eigen::Dynamic, 1> mat_int_loaded;
+    ASSERT_NO_THROW(ia >> mat_int_loaded);
+    ASSERT_EQ(mat_int, mat_int_loaded);
+  }
+
+  PRINTF("All good at EigenSerializationTest::EigenDynamicVectorBoostSerialization !\n");
+}
+
 TEST(EigenSerializationTest, EigenTripletBoostSerialization)
 {
   std::stringstream ss;
