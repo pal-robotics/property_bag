@@ -115,12 +115,6 @@ void serialize(Archive & ar, Eigen::Quaternion<_Scalar>& q, const unsigned int /
   ar & q.z();
 }
 
-//template<class Archive>
-//void serialize(Archive & ar, Eigen::Isometry3d & g, const unsigned int /*version*/)
-//{
-//  ar & g.matrix();
-//}
-
 template<class Archive, typename _Scalar, int _Dim, int _Mode, int _Options>
 inline void serialize(Archive& ar,
                       Eigen::Transform<_Scalar, _Dim, _Mode, _Options>& t,
