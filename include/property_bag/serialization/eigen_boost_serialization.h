@@ -49,14 +49,14 @@ void serialize(Archive & ar, Eigen::Matrix<_Scalar,_Rows,_Cols,_Options,_MaxRows
 }
 
 
-template <class Archive, typename _Scalar>
-void save(Archive & ar, const Eigen::Triplet<_Scalar>& m, const unsigned int /*version*/) {
+template <class Archive, typename _Scalar, typename Index>
+void save(Archive & ar, const Eigen::Triplet<_Scalar,Index>& m, const unsigned int /*version*/) {
   ar & m.row();
   ar & m.col();
   ar & m.value();
 }
-template <class Archive, typename _Scalar>
-void load(Archive & ar, Eigen::Triplet<_Scalar>& m, const unsigned int /*version*/) {
+template <class Archive, typename _Scalar, typename Index>
+void load(Archive & ar, Eigen::Triplet<_Scalar,Index>& m, const unsigned int /*version*/) {
   int row,col;
   _Scalar value;
   ar & row;
@@ -65,8 +65,8 @@ void load(Archive & ar, Eigen::Triplet<_Scalar>& m, const unsigned int /*version
   m = Eigen::Triplet<_Scalar>(row,col,value);
 }
 
-template <class Archive, typename _Scalar>
-void serialize(Archive & ar, Eigen::Triplet<_Scalar> & m, const unsigned int version) {
+template <class Archive, typename _Scalar, typename Index>
+void serialize(Archive & ar, Eigen::Triplet<_Scalar,Index> & m, const unsigned int version) {
   split_free(ar,m,version);
 }
 
@@ -106,8 +106,8 @@ void serialize(Archive & ar, Eigen::SparseMatrix<_Scalar,_Options,_Index> & m, c
   split_free(ar,m,version);
 }
 
-template<class Archive, typename _Scalar>
-void serialize(Archive & ar, Eigen::Quaternion<_Scalar>& q, const unsigned int /*version*/)
+template<class Archive, typename _Scalar, int _Options>
+void serialize(Archive & ar, Eigen::Quaternion<_Scalar,_Options>& q, const unsigned int /*version*/)
 {
   ar & q.w();
   ar & q.x();
