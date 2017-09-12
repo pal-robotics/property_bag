@@ -25,15 +25,6 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
 
-namespace
-{
-
-template<typename A, typename B>
-using disable_if_same_or_derived = typename std::enable_if<
-        !std::is_base_of<A,typename std::remove_reference<B>::type >::value>;
-
-}
-
 namespace property_bag
 {
 
@@ -77,6 +68,15 @@ shared_ptr<Tout> dynamic_pointer_cast(Tin&& in)
 
 } // namespace property_bag
 #endif
+
+namespace
+{
+
+template<typename A, typename B>
+using disable_if_same_or_derived = typename std::enable_if<
+        !std::is_base_of<A,typename std::remove_reference<B>::type >::value>;
+
+}
 
 namespace property_bag
 {
