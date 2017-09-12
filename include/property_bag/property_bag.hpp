@@ -1,4 +1,15 @@
-#include "property_bag/property_bag.h"
+/**
+ * \file property_bag.h
+ * \brief Property container holding many different type.
+ * \author Jeremie Deray
+ *  Created on: 26/09/2016
+ */
+
+#ifndef PROPERTY_BAG_PROPERTY_BAG_HPP
+#define PROPERTY_BAG_PROPERTY_BAG_HPP
+
+// Uncomment for editor highlights.
+//#include "property_bag/property_bag.h"
 
 namespace property_bag
 {
@@ -107,3 +118,5 @@ typename AbstractPropertyBag<KeyType>::const_iterator AbstractPropertyBag<KeyTyp
 }
 
 } // namespace property_bag
+
+#endif /* PROPERTY_BAG_PROPERTY_BAG_HPP */
