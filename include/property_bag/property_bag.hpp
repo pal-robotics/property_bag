@@ -1,5 +1,5 @@
 /**
- * \file property_bag.h
+ * \file property_bag.hpp
  * \brief Property container holding many different type.
  * \author Jeremie Deray
  *  Created on: 26/09/2016

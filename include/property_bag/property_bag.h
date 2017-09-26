@@ -66,10 +66,25 @@ enum class RetrievalHandling : std::size_t
   THROW
 };
 
+inline std::ostream& operator <<(std::ostream& s, const RetrievalHandling r)
+{
+  switch (r) {
+  case RetrievalHandling::QUIET:
+    s << "QUIET";
+    break;
+  case RetrievalHandling::THROW:
+    s << "THROW";
+    break;
+  }
+  return s;
+}
+
 template <typename KeyType = std::string>
 class AbstractPropertyBag
 {
   using PropertyMap = std::map<KeyType, Property>;
+
+  struct WithDocHelper {};
 
 public:
 
@@ -82,7 +97,7 @@ public:
    */
   struct serialization_accessor;
 
-  struct WithDoc {};
+  static constexpr WithDocHelper WithDoc = {};
 
   AbstractPropertyBag()          = default;
   virtual ~AbstractPropertyBag() = default;
@@ -142,7 +157,7 @@ public:
 
   template <typename... Args, typename =
             typename enable_if_none_is_same_as<AbstractPropertyBag, Args...>::type>
-  AbstractPropertyBag(const WithDoc /*withdoc*/, Args&&... args)
+  AbstractPropertyBag(const WithDocHelper /*withdoc*/, Args&&... args)
   {
     addPropertiesWithDoc(std::forward<Args>(args)...);
   }
@@ -157,36 +172,50 @@ public:
   {
     auto it = properties_.find(name);
 
-    if (it != properties_.end()){
-      if (handling == RetrievalHandling::QUIET){
-        try{
-          value = it->second.template get<T>();
-        }
-        catch (PropertyException& e){
-          //std::cerr << "While retrieving property "
-          //          << name << " got " << e.what() << std::endl;
-          return false;
-        }
-      }
-      else{
+    if (it != properties_.end())
+    {
+      try
+      {
         value = it->second.template get<T>();
       }
-    }
-    else{
-      if (handling == RetrievalHandling::THROW){
-        std::stringstream ss;
-        ss << "Variable '" << name
-           << "' not found in property bag."
-           << "\nAvailable variables:";
-        auto variales = listProperties();
-        for (auto it = variales.begin(); it != variales.end(); ++it){
-          ss << "\n\t" << *it << std::endl;
+      catch (const PropertyException& e)
+      {
+        switch (handling) {
+        case RetrievalHandling::QUIET:
+        {
+          return false;
         }
+        case RetrievalHandling::THROW:
+        {
+          std::stringstream ss;
+          ss << "named '" << name << "':\n";
+          ss << e.what();
+          throw PropertyException(ss.str());
+          break;
+        }
+        }
+      }
+    } else {
+
+      switch (handling) {
+      case RetrievalHandling::QUIET:
+      {
+        return false;
+      }
+      case RetrievalHandling::THROW:
+      {
+        std::stringstream ss;
+        ss << "named '" << name
+           << "' not found in property bag."
+           << "\nAvailable properties:";
+
+        for (const auto& n : listProperties())
+          ss << "\n\t" << n << std::endl;
+
         throw PropertyException(ss.str());
       }
-      return false;
+      }
     }
-
     return true;
   }
 
@@ -196,13 +225,17 @@ public:
     return getPropertyValue(name, value, default_handling_);
   }
 
-  template <typename T>
+  template <typename T, typename TT>
   bool getPropertyValue(const KeyType &name, T& value,
-                        T&& default_value) const
+                        TT&& default_value) const
   {
+    static_assert(std::is_convertible<TT,T>::value,
+                  "'default_value' type isn't convertible to "
+                  "'value' type in 'value' assignation.");
+
     bool got = getPropertyValue(name, value, RetrievalHandling::QUIET);
 
-    if (!got) value = std::forward<T>(default_value);
+    if (!got) value = std::forward<TT>(default_value);
 
     return got;
   }
@@ -213,7 +246,29 @@ public:
     auto it = properties_.find(name);
 
     if (it != properties_.end())
-      /*value = */it->second.template set<T>(std::forward<T>(value));
+    {
+      try
+      {
+        it->second.template set<T>(std::forward<T>(value));
+      }
+      catch (const PropertyException& e)
+      {
+        switch (default_handling_) {
+        case RetrievalHandling::QUIET:
+        {
+          return false;
+        }
+        case RetrievalHandling::THROW:
+        {
+          std::stringstream ss;
+          ss << "Property '" << name << "':\n";
+          ss << e.what();
+          throw PropertyException(ss.str());
+          break;
+        }
+        }
+      }
+    }
     else
       return false;
 
@@ -241,7 +296,12 @@ public:
   iterator end();
   const_iterator end() const;
 
+  inline void name(const KeyType& bag_name) { name_ = bag_name; }
+  inline const KeyType& name() { return name_; }
+
 private:
+
+  KeyType name_;
 
   Property none_;
 
@@ -253,6 +313,7 @@ private:
 
   void addPropertiesWithDoc();
 };
+
 using PropertyBag = AbstractPropertyBag<std::string>;
 
 } //namespace property_bag

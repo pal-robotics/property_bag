@@ -2,6 +2,37 @@
 #include <Eigen/Dense>
 #include <property_bag/property_bag.h>
 
+TEST(PropertyBagTest, PropertyBagRetrievalHandlingStream)
+{
+  std::stringstream ss;
+
+  ss << property_bag::RetrievalHandling::QUIET;
+
+  ASSERT_EQ(ss.str(), "QUIET");
+
+  ss.str("");
+
+  ss << property_bag::RetrievalHandling::THROW;
+
+  ASSERT_EQ(ss.str(), "THROW");
+
+  PRINTF("All good at "
+   "PropertyBagTest::PropertyBagRetrievalHandlingStream !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagName)
+{
+  property_bag::PropertyBag named_bag;
+
+  ASSERT_EQ(named_bag.name(), "");
+
+  named_bag.name("test");
+
+  ASSERT_EQ(named_bag.name(), "test");
+
+  PRINTF("All good at PropertyBagTest::PropertyBagName !\n");
+}
+
 TEST(PropertyBagTest, PropertyBag)
 {
   Eigen::Vector3d eigen_vector(1., 2., 3.);
@@ -41,6 +72,20 @@ TEST(PropertyBagTest, PropertyBag)
   ASSERT_EQ(list_properties, (std::list<std::string>{"my_bool", "my_int", "my_string", "my_vector"}));
 
   PRINTF("All good at PropertyBagTest::PropertyBag !\n");
+}
+
+TEST(PropertyBagTest, PropertyBagExistingProperty)
+{
+  property_bag::PropertyBag bag{"my_bool", true};
+
+  ASSERT_FALSE(bag.addProperty("my_bool", false));
+
+  bool my_bool(false);
+  ASSERT_TRUE(bag.getPropertyValue("my_bool", my_bool));
+
+  ASSERT_TRUE(my_bool);
+
+  PRINTF("All good at PropertyBagTest::PropertyBagExistingProperty !\n");
 }
 
 TEST(PropertyBagTest, PropertyBagDefaultValue)
@@ -215,7 +260,7 @@ TEST(PropertyBagTest, PropertyBagAddWithDoc)
 
 TEST(PropertyBagTest, PropertyBagConstructorDoc)
 {
-  property_bag::PropertyBag bag{property_bag::PropertyBag::WithDoc{},
+  property_bag::PropertyBag bag{property_bag::PropertyBag::WithDoc,
                                 "my_bool", true, "my_bool_doc",
                                 "my_int", 5, "my_int_doc",
                                 "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"};
@@ -239,7 +284,7 @@ TEST(PropertyBagTest, PropertyBagConstructorDoc)
 TEST(PropertyBagTest, PropertyPropertyBag)
 {
   property_bag::Property property{
-    property_bag::PropertyBag{property_bag::PropertyBag::WithDoc{},
+    property_bag::PropertyBag{property_bag::PropertyBag::WithDoc,
                               "my_bool", true, "my_bool_doc",
                               "my_int", 5, "my_int_doc",
                               "my_dummy", test::Dummy{2, 6.28, "ok"}, "my_dummy_doc"},
