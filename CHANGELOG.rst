@@ -2,6 +2,39 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'update' into 'dubnium-devel'
+  Update
+  See merge request !7
+* moar tests
+* eigen seria missing template params
+* rm comment
+* eigen seria gtest
+* moar gtest
+* moar gtest
+* gtest serialization bag name
+* gtest serialization bag RetrievalHandling
+* add bag name gtest
+* serialize bag name
+* serialize missing bag retrieval handling value
+* typo property_bag.hpp
+* fix test compilation
+* add PropertyBag name
+* fix getPropertyValue with default value
+* catch Bag catch Property error and possibly re-throw with prop name
+* WithDoc without instantiation brackets
+* RetrievalHandling stream operator
+* Merge branch 'fix-boost-v-1.56+' into 'dubnium-devel'
+  mv traits outside boost guards
+  See merge request !8
+* Merge branch 'fix-header-guards' into 'dubnium-devel'
+  add header guards to property_bag.hpp
+  See merge request !9
+* add header guards to property_bag.hpp
+* mv traits outside boost guards
+* Contributors: Hilario Tome, Jeremie Deray
+
 0.0.3 (2017-07-24)
 ------------------
 * Merge branch 'package-format-2' into 'dubnium-devel'
