@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.4 (2017-10-25)
+------------------
 * Merge branch 'update' into 'dubnium-devel'
   Update
   See merge request !7
