@@ -24,3 +24,6 @@ target_link_libraries(gtest_property_bag_boost_serialization ${PROJECT_NAME} ${B
 
 catkin_add_gtest(gtest_eigen_boost_serialization gtest_eigen_boost_serialization.cpp)
 target_link_libraries(gtest_eigen_boost_serialization ${PROJECT_NAME} ${Boost_LIBRARIES})
+
+catkin_add_gtest(gtest_ros_boost_serialization gtest_ros_boost_serialization.cpp)
+target_link_libraries(gtest_ros_boost_serialization ${PROJECT_NAME} ${Boost_LIBRARIES})

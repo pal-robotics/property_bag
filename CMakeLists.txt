@@ -33,6 +33,8 @@ find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  geometry_msgs
+  std_msgs
 )
 
 find_package(Boost COMPONENTS serialization REQUIRED)
@@ -63,9 +65,11 @@ add_library(${PROJECT_NAME}
   src/property.cpp
   src/serialization/boost_serialization_registry.cpp #<- at last
   src/serialization/eigen_boost_serialization_registry.cpp #<- at last
+  src/serialization/ros_boost_serialization_registry.cpp
 )
 target_link_libraries(${PROJECT_NAME}
    ${Boost_LIBRARIES}
+   ${catkin_LIBRARIES}
 )
 
 #add_library(${PROJECT_NAME}_BOOST_SERIALIZATION
