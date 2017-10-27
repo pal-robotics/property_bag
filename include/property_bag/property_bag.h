@@ -299,6 +299,15 @@ public:
   inline void name(const KeyType& bag_name) { name_ = bag_name; }
   inline const KeyType& name() { return name_; }
 
+  /**
+   * @brief concatenate another property bag to this one
+   * If a key exists on both bags, the property present on this map is kept
+   */
+  void concatenate(const AbstractPropertyBag<KeyType> &other)
+  {
+    properties_.insert(other.begin(), other.end());
+  }
+
 private:
 
   KeyType name_;

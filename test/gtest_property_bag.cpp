@@ -345,6 +345,31 @@ TEST(PropertyBagTest, PropertyPropertyBag)
   PRINTF("All good at PropertyTest::PropertyPropertyBag !\n");
 }
 
+
+TEST(PropertyBagTest, PropertyBagConcatenate)
+{
+  property_bag::PropertyBag bag{"my_bool", true, "my_int", 5};
+  property_bag::PropertyBag bag2{"my_double", 5.0, "my_int", 2};
+
+
+  bool my_bool(false);
+  int  my_int(55);
+  double my_double(-5.0);
+  bag.concatenate(bag2);
+
+  ASSERT_TRUE(bag.getPropertyValue<bool>("my_bool", my_bool));
+  ASSERT_TRUE(my_bool);
+
+  ASSERT_TRUE(bag.getPropertyValue<int>("my_int", my_int));
+  ASSERT_EQ(my_int, 5);
+
+  ASSERT_TRUE(bag.getPropertyValue<double>("my_double", my_double));
+  ASSERT_EQ(my_double, 5.0);
+
+  bag2.concatenate(bag);
+  ASSERT_TRUE(bag2.getPropertyValue<int>("my_int", my_int));
+  ASSERT_EQ(my_int, 2);
+}
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
