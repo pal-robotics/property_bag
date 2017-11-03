@@ -300,10 +300,10 @@ public:
   inline const KeyType& name() { return name_; }
 
   /**
-   * @brief concatenate another property bag to this one
+   * @brief append another property bag to this one
    * If a key exists on both bags, the property present on this map is kept
    */
-  void concatenate(const AbstractPropertyBag<KeyType> &other)
+  void append(const AbstractPropertyBag<KeyType> &other)
   {
     properties_.insert(other.begin(), other.end());
   }

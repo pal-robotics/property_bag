@@ -355,7 +355,7 @@ TEST(PropertyBagTest, PropertyBagConcatenate)
   bool my_bool(false);
   int  my_int(55);
   double my_double(-5.0);
-  bag.concatenate(bag2);
+  bag.append(bag2);
 
   ASSERT_TRUE(bag.getPropertyValue<bool>("my_bool", my_bool));
   ASSERT_TRUE(my_bool);
@@ -366,7 +366,7 @@ TEST(PropertyBagTest, PropertyBagConcatenate)
   ASSERT_TRUE(bag.getPropertyValue<double>("my_double", my_double));
   ASSERT_EQ(my_double, 5.0);
 
-  bag2.concatenate(bag);
+  bag2.append(bag);
   ASSERT_TRUE(bag2.getPropertyValue<int>("my_int", my_int));
   ASSERT_EQ(my_int, 2);
 }
