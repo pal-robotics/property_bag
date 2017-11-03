@@ -8,8 +8,7 @@
 #ifndef PROPERTY_BAG_PROPERTY_BAG_HPP
 #define PROPERTY_BAG_PROPERTY_BAG_HPP
 
-// Uncomment for editor highlights.
-//#include "property_bag/property_bag.h"
+#include <property_bag/property_bag.h>
 
 namespace property_bag
 {
