@@ -20,7 +20,7 @@ TEST(StuffTest, Stuff)
   property_bag::PropertyException exception("test");
 
   ASSERT_EQ(exception.message_, "test");
-  ASSERT_EQ(std::string(exception.what()), "Property : test\n");
+  ASSERT_EQ(std::string(exception.what()), "test");
 
   PRINTF("All good at StuffTest::Stuff !\n");
 }

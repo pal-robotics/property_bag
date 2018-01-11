@@ -12,10 +12,7 @@ PropertyException::PropertyException(const std::string &message) :
 
 const char* PropertyException::what() const throw()
 {
-  std::stringstream ss;
-  ss << "Property : " << message_ << std::endl;
-
-  return ss.str().c_str();
+  return message_.c_str();
 }
 
 namespace details
