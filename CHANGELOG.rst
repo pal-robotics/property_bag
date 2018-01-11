@@ -2,6 +2,29 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'bug_fix' into 'dubnium-devel'
+  fix bug return ptr to tmp obj
+  See merge request common/property_bag!14
+* fix bug return ptr to tmp obj
+* Merge branch 'ros_seria' into 'dubnium-devel'
+  ros seria use make_nvp & make_array
+  See merge request common/property_bag!12
+* ros seria use make_nvp & make_array
+* added missing catkin include dirs
+* Merge branch 'concatenate-bags' into 'dubnium-devel'
+  Add concatenate bags
+  See merge request common/property_bag!11
+* Include property-bag.h from property_bag.hpp
+* Rename to append
+* Add concatenate bags
+* Merge branch 'add-ros-types' into 'dubnium-devel'
+  Add ros message serialization for some basic types
+  See merge request common/property_bag!10
+* Add ros message serialization for some basic types
+* Contributors: Hilario Tome, Jeremie Deray, Victor Lopez
+
 0.0.4 (2017-10-25)
 ------------------
 * Merge branch 'update' into 'dubnium-devel'
