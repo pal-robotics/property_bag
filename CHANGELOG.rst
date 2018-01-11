@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2018-01-11)
+------------------
 * Merge branch 'bug_fix' into 'dubnium-devel'
   fix bug return ptr to tmp obj
   See merge request common/property_bag!14

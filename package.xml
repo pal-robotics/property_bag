@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>property_bag</name>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <description>A generic container based on type-erasure.</description>
 
   <maintainer email="jeremie.deray@pal-robotics.com">Jeremie Deray</maintainer>
