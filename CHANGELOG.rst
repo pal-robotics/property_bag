@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2019-03-18)
+------------------
 * Fix system include
 * Add licence to package.xml
 * Add LGPL v· license
