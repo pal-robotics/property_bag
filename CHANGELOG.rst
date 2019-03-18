@@ -2,6 +2,13 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix system include
+* Add licence to package.xml
+* Add LGPL v· license
+* Contributors: Victor Lopez
+
 0.0.5 (2018-01-11)
 ------------------
 * Merge branch 'bug_fix' into 'dubnium-devel'
