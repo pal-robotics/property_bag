@@ -2,6 +2,11 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added more propperty bag serialization types
+* Contributors: Hilario Tome
+
 0.0.6 (2019-03-18)
 ------------------
 * Fix system include
