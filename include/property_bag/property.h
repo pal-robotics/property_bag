@@ -511,6 +511,8 @@ public:
   //! A none type for Property when the Property is uninitialized.
   struct none
   {
+    none() = default;
+    none(const none &other) { *this = other; }
     none& operator=(const none&) { return *this; }
     const none& operator=(const none&) const { return *this; }
     friend bool operator==(const none&, const none&) { return true; }
