@@ -2,6 +2,11 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix implicit missing constructors
+* Contributors: Victor Lopez
+
 0.0.7 (2019-07-30)
 ------------------
 * added more propperty bag serialization types
