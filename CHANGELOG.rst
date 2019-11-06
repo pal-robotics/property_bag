@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.8 (2019-11-06)
+------------------
 * Fix implicit missing constructors
 * Contributors: Victor Lopez
 
