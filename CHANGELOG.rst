@@ -2,8 +2,8 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.9 (2021-08-11)
+------------------
 * Merge branch 'noetic_fixes' into 'ferrum-devel'
   Commented already defined enum in gtest
   See merge request common/property_bag!16
