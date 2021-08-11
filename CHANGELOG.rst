@@ -2,6 +2,15 @@
 Changelog for package property_bag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'noetic_fixes' into 'ferrum-devel'
+  Commented already defined enum in gtest
+  See merge request common/property_bag!16
+* Add missing dependencies
+* Replacing PRINTF() that is incomptible with more recent versions of gtest
+* Contributors: Jordan Palacios, Victor Lopez, victor
+
 0.0.8 (2019-11-06)
 ------------------
 * Fix implicit missing constructors
