@@ -109,10 +109,16 @@ struct Dummy
 
     return *this;
   }
+  
+  bool almost_equal(
+    float in1, float in2, float epsilon=std::numeric_limits<float>::epsilon()) const
+  {
+    return std::abs(in1 - in2) < epsilon;
+  }
 
   bool operator ==(const Dummy& d) const
   {
-    return (a_ == d.a_) & (b_ == d.b_) & (s_ == d.s_);
+    return (a_ == d.a_) & almost_equal(b_, d.b_) & (s_ == d.s_);
   }
 
   int         a_;
