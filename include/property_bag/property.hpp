@@ -11,7 +11,7 @@
 #include <bitset>
 #include <sstream>
 
-#include "property_bag/utils.h"
+#include "property_bag/utils.hpp"
 
 /*
  * Boost pre-1.56 has no serialization
