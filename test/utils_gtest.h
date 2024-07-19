@@ -10,39 +10,12 @@
 
 #include <gtest/gtest.h>
 
-
-// Macros for testing equalities and inequalities.
-//
-//    * {ASSERT|EXPECT}_EQ(expected, actual): Tests that expected == actual
-//    * {ASSERT|EXPECT}_NE(v1, v2):           Tests that v1 != v2
-//    * {ASSERT|EXPECT}_LT(v1, v2):           Tests that v1 < v2
-//    * {ASSERT|EXPECT}_LE(v1, v2):           Tests that v1 <= v2
-//    * {ASSERT|EXPECT}_GT(v1, v2):           Tests that v1 > v2
-//    * {ASSERT|EXPECT}_GE(v1, v2):           Tests that v1 >= v2
-
-
 // http://stackoverflow.com/a/29155677
 
 namespace testing
 {
 namespace internal
 {
-// enum GTestColor
-// {
-//   COLOR_DEFAULT,
-//   COLOR_RED,
-//   COLOR_GREEN,
-//   COLOR_YELLOW
-// };
-
-// extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-/*
-// #define PRINTF(...) \
-//   do { testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN,\
-//   "[          ] "); \
-//   testing::internal::ColoredPrintf(testing::internal::COLOR_YELLOW, __VA_ARGS__); } \
-//   while(0)
-*/
 #define PRINTF(...) printf(__VA_ARGS__)
 
 // C++ stream interface
