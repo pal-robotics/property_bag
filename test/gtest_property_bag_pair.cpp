@@ -1,6 +1,6 @@
 #include "utils_gtest.h"
 
-#include "property_bag/property_bag.h"
+#include "property_bag/property_bag.hpp"
 
 TEST(PropertyTest, ProperStdPair)
 {

@@ -35,6 +35,7 @@ namespace internal
 //   COLOR_YELLOW
 // };
 
+<<<<<<< Updated upstream
 // extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
 /*
 // #define PRINTF(...) \
@@ -44,6 +45,15 @@ namespace internal
 //   while(0)
 */
 #define PRINTF(...) printf(__VA_ARGS__)
+=======
+extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
+
+#define PRINTF(...) \
+  do { testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN,\
+  "[          ] "); \
+  testing::internal::ColoredPrintf(testing::internal::COLOR_YELLOW, __VA_ARGS__); } \
+  while(0)
+>>>>>>> Stashed changes
 
 // C++ stream interface
 class TestCout : public std::stringstream
@@ -165,6 +175,35 @@ std::ostream& operator<< (std::ostream& os, const Dummy& ts)
 
   return os;
 }
+
+/**
+ * @brief Wrap a code block with try-catch, handle exceptions thrown, print them
+ * into EXCEPT_STREAM and rethrow.
+ */
+#define PRINT_AND_RETHROW(CODE_BLOCK, EXCEPT_STREAM) \
+  try{ \
+    do{ CODE_BLOCK; } while(0); \
+  } catch(const std::exception& ex) { \
+    EXCEPT_STREAM << "std::exception thrown: " << ex.what() << std::endl; \
+    throw; \
+  }catch(...) { \
+    EXCEPT_STREAM << "unknown structure thrown" << std::endl; \
+    throw; \
+  }
+
+/**
+ * @brief Wrap a code block with try-catch, handle exceptions thrown, print them
+ * into std::cerr and rethrow.
+ */
+#define PRINT_STDERR_AND_RETHROW(CODE_BLOCK) \
+  PRINT_AND_RETHROW(CODE_BLOCK, std::cerr)
+
+#define EXPECT_NO_THROW_PRINT(CODE_BLOCK) \
+  EXPECT_NO_THROW(PRINT_STDERR_AND_RETHROW(CODE_BLOCK))
+
+#define ASSERT_NO_THROW_PRINT(CODE_BLOCK) \
+  ASSERT_NO_THROW(PRINT_STDERR_AND_RETHROW(CODE_BLOCK))
+
 } // namespace test
 
 #endif /* PROPERTY_BAG_UTILS_TESTING_H */
