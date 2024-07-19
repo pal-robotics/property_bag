@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>property_bag</name>
   <version>0.0.9</version>
   <description>A generic container based on type-erasure.</description>
@@ -10,18 +10,20 @@
 
   <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
 
-  <build_depend>eigen</build_depend>
-
-  <depend>roscpp</depend>
-  <depend>cmake_modules</depend>
+  <depend>boost</depend>
+  <depend>eigen</depend>
+  <depend>rclcpp</depend>
+  <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
-  <build_export_depend>eigen</build_export_depend>
-  <test_depend>rostest</test_depend>
+  
+  <!-- <test_depend>rostest</test_depend> -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
-    <!-- The export -->
+    <build_type>cmake</build_type>
   </export>
 </package>
