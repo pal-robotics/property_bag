@@ -35,7 +35,6 @@ namespace internal
 //   COLOR_YELLOW
 // };
 
-<<<<<<< Updated upstream
 // extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
 /*
 // #define PRINTF(...) \
@@ -45,15 +44,6 @@ namespace internal
 //   while(0)
 */
 #define PRINTF(...) printf(__VA_ARGS__)
-=======
-extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-
-#define PRINTF(...) \
-  do { testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN,\
-  "[          ] "); \
-  testing::internal::ColoredPrintf(testing::internal::COLOR_YELLOW, __VA_ARGS__); } \
-  while(0)
->>>>>>> Stashed changes
 
 // C++ stream interface
 class TestCout : public std::stringstream
