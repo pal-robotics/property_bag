@@ -1,5 +1,5 @@
-#include <property_bag/serialization/property_boost_serialization.h>
-#include <property_bag/serialization/eigen_boost_serialization.h>
+#include "property_bag/serialization/property_boost_serialization.hpp"
+#include "property_bag/serialization/eigen_boost_serialization.hpp"
 
 // Specific boost specializations for Eigen
 EXPORT_PROPERTY_NAMED_TYPE(Eigen::Vector3d, eigen_vector3)
