@@ -327,5 +327,5 @@ using PropertyBag = AbstractPropertyBag<std::string>;
 
 } //namespace property_bag
 
-#include "property_bag/property_bag.hxx"
+#include "property_bag/property_bag_impl.hpp"
 #endif //PROPERTY_BAG_PROPERTY_BAG_HPP
