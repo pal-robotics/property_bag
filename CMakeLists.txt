@@ -22,7 +22,7 @@ add_library(${PROJECT_NAME}
   src/property.cpp
   src/serialization/boost_serialization_registry.cpp
   src/serialization/eigen_boost_serialization_registry.cpp
-  src/serialization/ros_boost_serialization_registry.cpp
+  src/serialization/ros2_boost_serialization_registry.cpp
 )
 target_include_directories(
   ${PROJECT_NAME} PUBLIC
