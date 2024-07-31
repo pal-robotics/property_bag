@@ -1,6 +1,6 @@
 #include "utils_gtest.h"
 
-#include "property_bag/serialization/ros_boost_serialization.hpp"
+#include "property_bag/serialization/ros2_boost_serialization.hpp"
 
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/archive/text_iarchive.hpp"

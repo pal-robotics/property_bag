@@ -1,5 +1,5 @@
 #include "property_bag/serialization/property_boost_serialization.hpp"
-#include "property_bag/serialization/ros_boost_serialization.hpp"
+#include "property_bag/serialization/ros2_boost_serialization.hpp"
 
 EXPORT_PROPERTY_NAMED_TYPE(geometry_msgs::msg::Pose, geometry_msgs__Pose)
 EXPORT_PROPERTY_NAMED_TYPE(
