@@ -1,12 +1,12 @@
 /**
- * \file property_bag.h
+ * \file property_bag.hpp
  * \brief Property container holding many different type.
  * \author Jeremie Deray
  *  Created on: 26/09/2016
  */
 
-#ifndef PROPERTY_BAG_PROPERTY_BAG_H
-#define PROPERTY_BAG_PROPERTY_BAG_H
+#ifndef PROPERTY_BAG_PROPERTY_BAG_HPP
+#define PROPERTY_BAG_PROPERTY_BAG_HPP
 
 #include "property_bag/property.hpp"
 
@@ -328,4 +328,4 @@ using PropertyBag = AbstractPropertyBag<std::string>;
 } //namespace property_bag
 
 #include "property_bag/property_bag.hxx"
-#endif //PROPERTY_BAG_PROPERTY_BAG_H
+#endif //PROPERTY_BAG_PROPERTY_BAG_HPP

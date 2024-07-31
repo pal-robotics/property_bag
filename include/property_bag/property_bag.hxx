@@ -5,8 +5,8 @@
  *  Created on: 26/09/2016
  */
 
-#ifndef PROPERTY_BAG_PROPERTY_BAG_HPP
-#define PROPERTY_BAG_PROPERTY_BAG_HPP
+#ifndef PROPERTY_BAG_PROPERTY_BAG_HXX
+#define PROPERTY_BAG_PROPERTY_BAG_HXX
 
 #include "property_bag/property_bag.hpp"
 
@@ -118,4 +118,4 @@ typename AbstractPropertyBag<KeyType>::const_iterator AbstractPropertyBag<KeyTyp
 
 } // namespace property_bag
 
-#endif /* PROPERTY_BAG_PROPERTY_BAG_HPP */
+#endif /* PROPERTY_BAG_PROPERTY_BAG_HXX */
