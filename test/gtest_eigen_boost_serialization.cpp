@@ -1,9 +1,8 @@
 #include "utils_gtest.h"
 
-#include "property_bag/serialization/eigen_boost_serialization.h"
-
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include "boost/archive/text_oarchive.hpp"
+#include "boost/archive/text_iarchive.hpp"
+#include "property_bag/serialization/eigen_boost_serialization.hpp"
 
 TEST(EigenSerializationTest, EigenMatrixBoostSerialization)
 {

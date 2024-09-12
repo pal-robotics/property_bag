@@ -1,9 +1,9 @@
 #include "utils_gtest.h"
 
-#include "property_bag/serialization/property_boost_serialization.h"
+#include "property_bag/serialization/property_boost_serialization.hpp"
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include "boost/archive/text_oarchive.hpp"
+#include "boost/archive/text_iarchive.hpp"
 
 EXPORT_PROPERTY_NAMED_TYPE(test::Dummy, test__Dummy);
 

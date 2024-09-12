@@ -8,10 +8,10 @@
 #ifndef PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_BAG_H
 #define PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_BAG_H
 
-#include <property_bag/serialization/property_boost_serialization.h>
-#include <property_bag/property_bag.h>
+#include "boost/serialization/map.hpp"
 
-#include <boost/serialization/map.hpp>
+#include "property_bag/serialization/property_boost_serialization.hpp"
+#include "property_bag/property_bag.hpp"
 
 namespace property_bag {
 

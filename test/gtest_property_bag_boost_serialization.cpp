@@ -1,7 +1,7 @@
 #include "utils_gtest.h"
 
-#include "property_bag/serialization/property_bag_boost_serialization.h"
-#include "property_bag/serialization/eigen_boost_serialization.h"
+#include "property_bag/serialization/property_bag_boost_serialization.hpp"
+#include "property_bag/serialization/eigen_boost_serialization.hpp"
 
 EXPORT_PROPERTY_NAMED_TYPE(test::Dummy, test__Dummy);
 

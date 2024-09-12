@@ -5,25 +5,17 @@
  *  Created on: 26/09/2016
  */
 
-#ifndef PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
-#define PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H
+#ifndef PROPERTY_BAG__BOOST_SERIALIZATION_PROPERTY_H
+#define PROPERTY_BAG__BOOST_SERIALIZATION_PROPERTY_H
 
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/bitset.hpp>
+#include "boost/serialization/nvp.hpp"
+#include "boost/serialization/shared_ptr.hpp"
+#include "boost/serialization/bitset.hpp"
+#include "boost/archive/text_oarchive.hpp"
+#include "boost/archive/text_iarchive.hpp"
+#include "boost/serialization/export.hpp"
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
-//#include <boost/archive/xml_oarchive.hpp>
-//#include <boost/archive/xml_iarchive.hpp>
-
-//#include <boost/archive/binary_oarchive.hpp>
-//#include <boost/archive/binary_iarchive.hpp>
-
-#include <boost/serialization/export.hpp>
-
-#include <property_bag/property.h>
+#include "property_bag/property.hpp"
 
 #define EXPORT_PROPERTY_NAMED_TYPE(Type, Name) \
   BOOST_CLASS_EXPORT_GUID(property_bag::details::PlaceHolderImpl<Type>, \
@@ -124,4 +116,4 @@ void serialize(
 } //namespace serialization
 } //namespace boost
 
-#endif /* PROPERTY_BAG_BOOST_SERIALIZATION_PROPERTY_H */
+#endif /* PROPERTY_BAG__BOOST_SERIALIZATION_PROPERTY_H */

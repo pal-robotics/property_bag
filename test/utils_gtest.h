@@ -10,39 +10,12 @@
 
 #include <gtest/gtest.h>
 
-
-// Macros for testing equalities and inequalities.
-//
-//    * {ASSERT|EXPECT}_EQ(expected, actual): Tests that expected == actual
-//    * {ASSERT|EXPECT}_NE(v1, v2):           Tests that v1 != v2
-//    * {ASSERT|EXPECT}_LT(v1, v2):           Tests that v1 < v2
-//    * {ASSERT|EXPECT}_LE(v1, v2):           Tests that v1 <= v2
-//    * {ASSERT|EXPECT}_GT(v1, v2):           Tests that v1 > v2
-//    * {ASSERT|EXPECT}_GE(v1, v2):           Tests that v1 >= v2
-
-
 // http://stackoverflow.com/a/29155677
 
 namespace testing
 {
 namespace internal
 {
-// enum GTestColor
-// {
-//   COLOR_DEFAULT,
-//   COLOR_RED,
-//   COLOR_GREEN,
-//   COLOR_YELLOW
-// };
-
-// extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-/*
-// #define PRINTF(...) \
-//   do { testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN,\
-//   "[          ] "); \
-//   testing::internal::ColoredPrintf(testing::internal::COLOR_YELLOW, __VA_ARGS__); } \
-//   while(0)
-*/
 #define PRINTF(...) printf(__VA_ARGS__)
 
 // C++ stream interface
@@ -136,10 +109,16 @@ struct Dummy
 
     return *this;
   }
+  
+  bool almost_equal(
+    float in1, float in2, float epsilon=std::numeric_limits<float>::epsilon()) const
+  {
+    return std::abs(in1 - in2) < epsilon;
+  }
 
   bool operator ==(const Dummy& d) const
   {
-    return (a_ == d.a_) & (b_ == d.b_) & (s_ == d.s_);
+    return (a_ == d.a_) & almost_equal(b_, d.b_) & (s_ == d.s_);
   }
 
   int         a_;
@@ -165,6 +144,35 @@ std::ostream& operator<< (std::ostream& os, const Dummy& ts)
 
   return os;
 }
+
+/**
+ * @brief Wrap a code block with try-catch, handle exceptions thrown, print them
+ * into EXCEPT_STREAM and rethrow.
+ */
+#define PRINT_AND_RETHROW(CODE_BLOCK, EXCEPT_STREAM) \
+  try{ \
+    do{ CODE_BLOCK; } while(0); \
+  } catch(const std::exception& ex) { \
+    EXCEPT_STREAM << "std::exception thrown: " << ex.what() << std::endl; \
+    throw; \
+  }catch(...) { \
+    EXCEPT_STREAM << "unknown structure thrown" << std::endl; \
+    throw; \
+  }
+
+/**
+ * @brief Wrap a code block with try-catch, handle exceptions thrown, print them
+ * into std::cerr and rethrow.
+ */
+#define PRINT_STDERR_AND_RETHROW(CODE_BLOCK) \
+  PRINT_AND_RETHROW(CODE_BLOCK, std::cerr)
+
+#define EXPECT_NO_THROW_PRINT(CODE_BLOCK) \
+  EXPECT_NO_THROW(PRINT_STDERR_AND_RETHROW(CODE_BLOCK))
+
+#define ASSERT_NO_THROW_PRINT(CODE_BLOCK) \
+  ASSERT_NO_THROW(PRINT_STDERR_AND_RETHROW(CODE_BLOCK))
+
 } // namespace test
 
 #endif /* PROPERTY_BAG_UTILS_TESTING_H */

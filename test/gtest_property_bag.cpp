@@ -1,6 +1,6 @@
 #include "utils_gtest.h"
-#include <Eigen/Dense>
-#include <property_bag/property_bag.h>
+#include "Eigen/Dense"
+#include "property_bag/property_bag.hpp"
 
 TEST(PropertyBagTest, PropertyBagRetrievalHandlingStream)
 {

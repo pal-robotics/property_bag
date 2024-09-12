@@ -1,4 +1,4 @@
-#include "property_bag/property.h"
+#include "property_bag/property.hpp"
 
 namespace property_bag
 {

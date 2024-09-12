@@ -1,6 +1,6 @@
-#include <property_bag/serialization/property_boost_serialization.h>
-#include <property_bag/serialization/property_bag_boost_serialization.h>
 #include <boost/serialization/vector.hpp>
+#include "property_bag/serialization/property_boost_serialization.hpp"
+#include "property_bag/serialization/property_bag_boost_serialization.hpp"
 
 EXPORT_PROPERTY_NAMED_TYPE(bool, bool)
 EXPORT_PROPERTY_NAMED_TYPE(int, int)

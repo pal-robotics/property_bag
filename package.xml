@@ -10,7 +10,7 @@
 
   <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>boost</depend>
   <depend>eigen</depend>
@@ -18,8 +18,8 @@
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>eigen3_cmake_module</depend>
   
-  <!-- <test_depend>rostest</test_depend> -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
